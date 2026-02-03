@@ -68,6 +68,23 @@ export function ProjectsFilter({ clients }: { clients: Client[] }) {
           ]}
           className="w-full sm:w-36"
         />
+        <Select
+          defaultValue={searchParams.get('sort') || 'newest'}
+          onChange={(e) => updateFilter('sort', e.target.value)}
+          options={[
+            { value: 'newest', label: 'Newest First' },
+            { value: 'oldest', label: 'Oldest First' },
+            { value: 'name', label: 'Name (A-Z)' },
+            { value: 'name_desc', label: 'Name (Z-A)' },
+            { value: 'client', label: 'Client (A-Z)' },
+            { value: 'client_desc', label: 'Client (Z-A)' },
+            { value: 'due_date', label: 'Due Date (Soonest)' },
+            { value: 'due_date_desc', label: 'Due Date (Latest)' },
+            { value: 'priority_high', label: 'Priority (High First)' },
+            { value: 'priority_low', label: 'Priority (Low First)' },
+          ]}
+          className="w-full sm:w-44"
+        />
       </div>
     </div>
   )

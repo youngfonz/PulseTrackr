@@ -8,6 +8,7 @@ export async function getProjects(filters?: {
   status?: string
   priority?: string
   clientId?: string
+  sort?: string
 }) {
   const where: Record<string, unknown> = {}
 
@@ -30,6 +31,42 @@ export async function getProjects(filters?: {
     where.clientId = filters.clientId
   }
 
+  // Determine sort order
+  type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
+  let orderBy: OrderBy | OrderBy[] = { createdAt: 'desc' as const }
+
+  switch (filters?.sort) {
+    case 'oldest':
+      orderBy = { createdAt: 'asc' }
+      break
+    case 'name':
+      orderBy = { name: 'asc' }
+      break
+    case 'name_desc':
+      orderBy = { name: 'desc' }
+      break
+    case 'client':
+      orderBy = { client: { name: 'asc' } }
+      break
+    case 'client_desc':
+      orderBy = { client: { name: 'desc' } }
+      break
+    case 'due_date':
+      orderBy = [{ dueDate: 'asc' }, { createdAt: 'desc' }]
+      break
+    case 'due_date_desc':
+      orderBy = [{ dueDate: 'desc' }, { createdAt: 'desc' }]
+      break
+    case 'priority_high':
+      orderBy = { priority: 'desc' }
+      break
+    case 'priority_low':
+      orderBy = { priority: 'asc' }
+      break
+    default:
+      orderBy = { createdAt: 'desc' }
+  }
+
   return prisma.project.findMany({
     where,
     include: {
@@ -43,7 +80,7 @@ export async function getProjects(filters?: {
         select: { tasks: true },
       },
     },
-    orderBy: { createdAt: 'desc' },
+    orderBy,
   })
 }
 

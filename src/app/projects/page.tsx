@@ -7,7 +7,7 @@ import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate,
 import { ProjectsFilter } from './ProjectsFilter'
 
 interface Props {
-  searchParams: Promise<{ search?: string; status?: string; priority?: string; clientId?: string }>
+  searchParams: Promise<{ search?: string; status?: string; priority?: string; clientId?: string; sort?: string }>
 }
 
 export default async function ProjectsPage({ searchParams }: Props) {

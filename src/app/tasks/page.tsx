@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
-import { getAllTasks, toggleTask } from '@/actions/tasks'
+import { getAllTasks, getProjectsForTaskFilter } from '@/actions/tasks'
 import { priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 import { TasksFilter } from './TasksFilter'
 import { TaskCheckbox } from './TaskCheckbox'
@@ -11,16 +11,23 @@ interface Props {
     date?: string
     status?: 'all' | 'pending' | 'completed'
     priority?: 'all' | 'high' | 'medium' | 'low'
+    projectId?: string
+    sort?: string
   }>
 }
 
 export default async function TasksPage({ searchParams }: Props) {
   const params = await searchParams
-  const tasks = await getAllTasks({
-    date: params.date,
-    status: params.status,
-    priority: params.priority,
-  })
+  const [tasks, projects] = await Promise.all([
+    getAllTasks({
+      date: params.date,
+      status: params.status,
+      priority: params.priority,
+      projectId: params.projectId,
+      sort: params.sort,
+    }),
+    getProjectsForTaskFilter(),
+  ])
 
   const dateLabel = params.date
     ? new Date(params.date).toLocaleDateString('en-US', {
@@ -60,6 +67,9 @@ export default async function TasksPage({ searchParams }: Props) {
         currentDate={params.date}
         currentStatus={params.status}
         currentPriority={params.priority}
+        currentProjectId={params.projectId}
+        currentSort={params.sort}
+        projects={projects}
       />
 
       <Card>

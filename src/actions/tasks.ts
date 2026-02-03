@@ -291,6 +291,8 @@ export async function getAllTasks(options?: {
   date?: string
   status?: 'all' | 'pending' | 'completed'
   priority?: 'all' | 'high' | 'medium' | 'low'
+  projectId?: string
+  sort?: string
 }) {
   const where: Record<string, unknown> = {}
 
@@ -326,6 +328,51 @@ export async function getAllTasks(options?: {
     where.priority = options.priority
   }
 
+  if (options?.projectId && options.projectId !== 'all') {
+    where.projectId = options.projectId
+  }
+
+  // Determine sort order
+  type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
+  let orderBy: OrderBy | OrderBy[] = [
+    { completed: 'asc' as const },
+    { dueDate: 'asc' as const },
+    { priority: 'desc' as const },
+  ]
+
+  switch (options?.sort) {
+    case 'due_date':
+      orderBy = [{ completed: 'asc' }, { dueDate: 'asc' }, { createdAt: 'desc' }]
+      break
+    case 'due_date_desc':
+      orderBy = [{ completed: 'asc' }, { dueDate: 'desc' }, { createdAt: 'desc' }]
+      break
+    case 'newest':
+      orderBy = [{ completed: 'asc' }, { createdAt: 'desc' }]
+      break
+    case 'oldest':
+      orderBy = [{ completed: 'asc' }, { createdAt: 'asc' }]
+      break
+    case 'name':
+      orderBy = [{ completed: 'asc' }, { title: 'asc' }]
+      break
+    case 'name_desc':
+      orderBy = [{ completed: 'asc' }, { title: 'desc' }]
+      break
+    case 'project':
+      orderBy = [{ completed: 'asc' }, { project: { name: 'asc' } }]
+      break
+    case 'client':
+      orderBy = [{ completed: 'asc' }, { project: { client: { name: 'asc' } } }]
+      break
+    case 'priority_high':
+      orderBy = [{ completed: 'asc' }, { priority: 'desc' }]
+      break
+    case 'priority_low':
+      orderBy = [{ completed: 'asc' }, { priority: 'asc' }]
+      break
+  }
+
   return prisma.task.findMany({
     where,
     include: {
@@ -342,10 +389,21 @@ export async function getAllTasks(options?: {
         },
       },
     },
-    orderBy: [
-      { completed: 'asc' },
-      { dueDate: 'asc' },
-      { priority: 'desc' },
-    ],
+    orderBy,
+  })
+}
+
+export async function getProjectsForTaskFilter() {
+  return prisma.project.findMany({
+    select: {
+      id: true,
+      name: true,
+      client: {
+        select: {
+          name: true,
+        },
+      },
+    },
+    orderBy: { name: 'asc' },
   })
 }

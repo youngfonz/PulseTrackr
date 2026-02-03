@@ -4,10 +4,19 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { Select } from '@/components/ui/Select'
 import { Button } from '@/components/ui/Button'
 
+interface Project {
+  id: string
+  name: string
+  client: { name: string }
+}
+
 interface TasksFilterProps {
   currentDate?: string
   currentStatus?: string
   currentPriority?: string
+  currentProjectId?: string
+  currentSort?: string
+  projects: Project[]
 }
 
 const statusOptions = [
@@ -23,7 +32,20 @@ const priorityOptions = [
   { value: 'low', label: 'Low' },
 ]
 
-export function TasksFilter({ currentDate, currentStatus, currentPriority }: TasksFilterProps) {
+const sortOptions = [
+  { value: 'due_date', label: 'Due Date (Soonest)' },
+  { value: 'due_date_desc', label: 'Due Date (Latest)' },
+  { value: 'newest', label: 'Newest First' },
+  { value: 'oldest', label: 'Oldest First' },
+  { value: 'name', label: 'Name (A-Z)' },
+  { value: 'name_desc', label: 'Name (Z-A)' },
+  { value: 'project', label: 'Project (A-Z)' },
+  { value: 'client', label: 'Client (A-Z)' },
+  { value: 'priority_high', label: 'Priority (High First)' },
+  { value: 'priority_low', label: 'Priority (Low First)' },
+]
+
+export function TasksFilter({ currentDate, currentStatus, currentPriority, currentProjectId, currentSort, projects }: TasksFilterProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -41,10 +63,20 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority }: Tas
     router.push('/tasks')
   }
 
-  const hasFilters = currentDate || currentStatus || currentPriority
+  const hasFilters = currentDate || currentStatus || currentPriority || currentProjectId
 
   return (
     <div className="flex flex-wrap items-center gap-3">
+      <Select
+        value={currentProjectId || 'all'}
+        onChange={(e) => updateFilter('projectId', e.target.value)}
+        options={[
+          { value: 'all', label: 'All Projects' },
+          ...projects.map((p) => ({ value: p.id, label: `${p.name} (${p.client.name})` })),
+        ]}
+        className="w-48"
+      />
+
       <Select
         value={currentStatus || 'all'}
         onChange={(e) => updateFilter('status', e.target.value)}
@@ -57,6 +89,13 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority }: Tas
         onChange={(e) => updateFilter('priority', e.target.value)}
         options={priorityOptions}
         className="w-36"
+      />
+
+      <Select
+        value={currentSort || 'due_date'}
+        onChange={(e) => updateFilter('sort', e.target.value)}
+        options={sortOptions}
+        className="w-44"
       />
 
       {hasFilters && (
