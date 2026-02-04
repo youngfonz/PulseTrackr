@@ -126,5 +126,10 @@ export async function getRecentProjects() {
 }
 
 export async function getClientCount() {
-  return prisma.client.count()
+  try {
+    return await prisma.client.count()
+  } catch (error) {
+    // Return 0 if database is not available (e.g., during build time)
+    return 0
+  }
 }
