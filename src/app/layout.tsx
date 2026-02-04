@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Sidebar } from "@/components/Sidebar";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { getClientCount } from "@/actions/dashboard";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,11 +20,13 @@ export const metadata: Metadata = {
   description: "Project & Task Management",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const clientCount = await getClientCount();
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -31,7 +34,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <div className="flex min-h-screen bg-background">
-            <Sidebar />
+            <Sidebar clientCount={clientCount} />
             <main className="flex-1 overflow-auto pt-14 md:pt-0">
               <div className="p-4 md:p-8">{children}</div>
             </main>

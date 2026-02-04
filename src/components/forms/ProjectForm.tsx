@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
+import { VoiceInput } from '@/components/ui/VoiceInput'
 import { createProject, updateProject } from '@/actions/projects'
+import { parseProjectFromVoice } from '@/lib/voice'
 import { useRouter } from 'next/navigation'
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 
 interface Project {
   id: string
@@ -36,6 +38,29 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
 
+  const formatDateForInput = (date: Date | null) => {
+    if (!date) return ''
+    return new Date(date).toISOString().split('T')[0]
+  }
+
+  // Controlled form state for voice input
+  const [name, setName] = useState(project?.name || '')
+  const [description, setDescription] = useState(project?.description || '')
+  const [priority, setPriority] = useState(project?.priority || 'medium')
+  const [dueDate, setDueDate] = useState(formatDateForInput(project?.dueDate || null))
+  const [budget, setBudget] = useState(project?.budget?.toString() || '')
+
+  const handleVoiceInput = (transcript: string) => {
+    const parsed = parseProjectFromVoice(transcript)
+
+    // Auto-populate form fields
+    if (parsed.name) setName(parsed.name)
+    if (parsed.description) setDescription(parsed.description)
+    if (parsed.priority) setPriority(parsed.priority)
+    if (parsed.dueDate) setDueDate(parsed.dueDate)
+    if (parsed.budget) setBudget(parsed.budget.toString())
+  }
+
   const handleSubmit = async (formData: FormData) => {
     startTransition(async () => {
       if (project) {
@@ -51,27 +76,35 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
     })
   }
 
-  const formatDateForInput = (date: Date | null) => {
-    if (!date) return ''
-    return new Date(date).toISOString().split('T')[0]
-  }
-
   return (
     <form action={handleSubmit} className="space-y-4">
-      <Input
-        id="name"
-        name="name"
-        label="Project Name *"
-        required
-        defaultValue={project?.name}
-        placeholder="Project name"
-      />
+      <div>
+        <label htmlFor="name" className="block text-sm font-medium text-foreground mb-1">
+          Project Name *
+        </label>
+        <div className="flex items-start gap-2">
+          <Input
+            id="name"
+            name="name"
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Project name"
+            className="flex-1"
+          />
+          <VoiceInput
+            onTranscript={handleVoiceInput}
+            placeholder="Speak to create project"
+          />
+        </div>
+      </div>
       <Textarea
         id="description"
         name="description"
         label="Description"
         rows={3}
-        defaultValue={project?.description || ''}
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
         placeholder="Project description..."
       />
       <Textarea
@@ -110,7 +143,8 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
           id="priority"
           name="priority"
           label="Priority"
-          defaultValue={project?.priority || 'medium'}
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
           options={[
             { value: 'low', label: 'Low' },
             { value: 'medium', label: 'Medium' },
@@ -124,7 +158,8 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
           name="dueDate"
           type="date"
           label="Due Date"
-          defaultValue={formatDateForInput(project?.dueDate || null)}
+          value={dueDate}
+          onChange={(e) => setDueDate(e.target.value)}
         />
         <Input
           id="budget"
@@ -133,7 +168,8 @@ export function ProjectForm({ project, clients, defaultClientId, onSuccess }: Pr
           step="0.01"
           min="0"
           label="Budget ($)"
-          defaultValue={project?.budget?.toString() || ''}
+          value={budget}
+          onChange={(e) => setBudget(e.target.value)}
           placeholder="0.00"
         />
       </div>

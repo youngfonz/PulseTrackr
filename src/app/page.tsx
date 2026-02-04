@@ -54,18 +54,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Cards - All Clickable */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Link href="/clients" className="block">
-          <Card className="transition-shadow hover:shadow-md cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="text-sm font-medium text-muted-foreground">Total Clients</div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground">{stats.totalClients}</span>
-                <span className="text-sm text-muted-foreground">({stats.activeClients} active)</span>
-              </div>
-            </CardContent>
-          </Card>
-        </Link>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <Link href="/projects" className="block">
           <Card className="transition-shadow hover:shadow-md cursor-pointer">
             <CardContent className="pt-6">

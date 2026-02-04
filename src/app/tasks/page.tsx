@@ -1,10 +1,12 @@
 import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import { getAllTasks, getProjectsForTaskFilter } from '@/actions/tasks'
 import { priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 import { TasksFilter } from './TasksFilter'
 import { TaskCheckbox } from './TaskCheckbox'
+import { AddTaskDialog } from './AddTaskDialog'
 
 interface Props {
   searchParams: Promise<{
@@ -61,6 +63,7 @@ export default async function TasksPage({ searchParams }: Props) {
             </p>
           )}
         </div>
+        <AddTaskDialog projects={projects} />
       </div>
 
       <TasksFilter

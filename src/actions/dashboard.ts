@@ -120,7 +120,11 @@ export async function getRecentProjects() {
         },
       },
     },
-    orderBy: { updatedAt: 'desc' },
+    orderBy: { createdAt: 'desc' },
     take: 5,
   })
+}
+
+export async function getClientCount() {
+  return prisma.client.count()
 }
