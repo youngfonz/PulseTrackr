@@ -34,6 +34,7 @@ export async function getProjects(filters?: {
   // Determine sort order
   type OrderBy = Record<string, 'asc' | 'desc' | Record<string, 'asc' | 'desc'>>
   let orderBy: OrderBy | OrderBy[] = { createdAt: 'desc' as const }
+  let customSort: 'priority' | 'priority_desc' | 'status' | 'status_desc' | null = null
 
   switch (filters?.sort) {
     case 'oldest':
@@ -58,22 +59,22 @@ export async function getProjects(filters?: {
       orderBy = [{ dueDate: 'desc' }, { createdAt: 'desc' }]
       break
     case 'priority':
-      orderBy = { priority: 'asc' }
+      customSort = 'priority'
       break
     case 'priority_desc':
-      orderBy = { priority: 'desc' }
+      customSort = 'priority_desc'
       break
     case 'status':
-      orderBy = { status: 'asc' }
+      customSort = 'status'
       break
     case 'status_desc':
-      orderBy = { status: 'desc' }
+      customSort = 'status_desc'
       break
     default:
       orderBy = { createdAt: 'desc' }
   }
 
-  return prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     where,
     include: {
       client: {
@@ -86,8 +87,29 @@ export async function getProjects(filters?: {
         select: { tasks: true },
       },
     },
-    orderBy,
+    orderBy: customSort ? { createdAt: 'desc' } : orderBy,
   })
+
+  // Apply custom sorting for priority and status (string enums that need logical ordering)
+  if (customSort) {
+    const priorityOrder = { low: 1, medium: 2, high: 3 }
+    const statusOrder = { not_started: 1, in_progress: 2, on_hold: 3, completed: 4 }
+
+    projects.sort((a, b) => {
+      if (customSort === 'priority') {
+        return priorityOrder[a.priority as keyof typeof priorityOrder] - priorityOrder[b.priority as keyof typeof priorityOrder]
+      } else if (customSort === 'priority_desc') {
+        return priorityOrder[b.priority as keyof typeof priorityOrder] - priorityOrder[a.priority as keyof typeof priorityOrder]
+      } else if (customSort === 'status') {
+        return statusOrder[a.status as keyof typeof statusOrder] - statusOrder[b.status as keyof typeof statusOrder]
+      } else if (customSort === 'status_desc') {
+        return statusOrder[b.status as keyof typeof statusOrder] - statusOrder[a.status as keyof typeof statusOrder]
+      }
+      return 0
+    })
+  }
+
+  return projects
 }
 
 export async function getProject(id: string) {
