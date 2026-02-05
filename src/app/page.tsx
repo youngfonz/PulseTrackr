@@ -23,8 +23,11 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h1>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Plan, prioritize, and accomplish your tasks with ease.</p>
+        </div>
         <div className="flex gap-2 sm:gap-3">
           <Link href="/clients/new" className="flex-1 sm:flex-none">
             <Button variant="secondary" className="w-full sm:w-auto flex items-center justify-center gap-2">
@@ -54,40 +57,61 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Cards - All Clickable */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <Link href="/projects" className="block">
-          <Card className="transition-shadow hover:shadow-md cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="text-sm font-medium text-muted-foreground">Active Projects</div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground">{stats.activeProjects}</span>
-                <span className="text-sm text-muted-foreground">of {stats.totalProjects}</span>
+      <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <Link href="/projects" className="block group">
+          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Active Projects</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-foreground">{stats.activeProjects}</span>
+                    <span className="text-sm text-muted-foreground">of {stats.totalProjects}</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
             </CardContent>
           </Card>
         </Link>
-        <Link href="/tasks" className="block">
-          <Card className="transition-shadow hover:shadow-md cursor-pointer">
-            <CardContent className="pt-6">
-              <div className="text-sm font-medium text-muted-foreground">Pending Tasks</div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className="text-3xl font-bold text-foreground">{stats.pendingTasks}</span>
-                <span className="text-sm text-muted-foreground">of {stats.totalTasks}</span>
+        <Link href="/tasks" className="block group">
+          <Card className="transition-all hover:shadow-lg cursor-pointer border-border/50 h-full">
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Pending Tasks</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className="text-4xl font-bold text-foreground">{stats.pendingTasks}</span>
+                    <span className="text-sm text-muted-foreground">of {stats.totalTasks}</span>
+                  </div>
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
             </CardContent>
           </Card>
         </Link>
-        <Link href="/tasks" className="block">
-          <Card className={`transition-shadow hover:shadow-md cursor-pointer ${overdueTasks.length > 0 ? 'border-red-500/50' : ''}`}>
-            <CardContent className="pt-6">
-              <div className="text-sm font-medium text-muted-foreground">Overdue Tasks</div>
-              <div className="mt-2 flex items-baseline gap-2">
-                <span className={`text-3xl font-bold ${overdueTasks.length > 0 ? 'text-red-500' : 'text-foreground'}`}>
-                  {overdueTasks.length}
-                </span>
-                {overdueTasks.length > 0 && (
-                  <span className="text-sm text-red-500">needs attention</span>
-                )}
+        <Link href="/tasks" className="block group">
+          <Card className={`transition-all hover:shadow-lg cursor-pointer h-full ${overdueTasks.length > 0 ? 'border-destructive/50 bg-destructive/5' : 'border-border/50'}`}>
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="text-sm font-medium text-muted-foreground">Overdue Tasks</div>
+                  <div className="mt-3 flex items-baseline gap-2">
+                    <span className={`text-4xl font-bold ${overdueTasks.length > 0 ? 'text-destructive' : 'text-foreground'}`}>
+                      {overdueTasks.length}
+                    </span>
+                  </div>
+                  {overdueTasks.length === 0 && (
+                    <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">All caught up!</p>
+                  )}
+                </div>
+                <svg className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </div>
             </CardContent>
           </Card>
@@ -118,8 +142,14 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             {projectsDueThisWeek.length === 0 ? (
-              <div className="px-6 py-8 text-center text-muted-foreground">
-                No projects due this week
+              <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mb-3">
+                  <svg className="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-foreground">Week looks clear</p>
+                <p className="text-xs text-muted-foreground mt-1">No project deadlines this week</p>
               </div>
             ) : (
               <div className="divide-y divide-border">
@@ -158,8 +188,14 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="p-0">
             {tasksDueToday.length === 0 ? (
-              <div className="px-6 py-8 text-center text-muted-foreground">
-                No tasks due today
+              <div className="px-6 py-12 flex flex-col items-center justify-center text-center">
+                <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mb-3">
+                  <svg className="w-8 h-8 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="text-sm font-medium text-foreground">All clear!</p>
+                <p className="text-xs text-muted-foreground mt-1">No tasks due today</p>
               </div>
             ) : (
               <div className="divide-y divide-border">
