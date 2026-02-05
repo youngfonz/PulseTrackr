@@ -57,11 +57,11 @@ export async function getProjects(filters?: {
     case 'due_date_desc':
       orderBy = [{ dueDate: 'desc' }, { createdAt: 'desc' }]
       break
-    case 'priority_high':
-      orderBy = { priority: 'desc' }
-      break
-    case 'priority_low':
+    case 'priority':
       orderBy = { priority: 'asc' }
+      break
+    case 'priority_desc':
+      orderBy = { priority: 'desc' }
       break
     case 'status':
       orderBy = { status: 'asc' }

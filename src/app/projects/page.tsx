@@ -66,7 +66,7 @@ export default async function ProjectsPage({ searchParams }: Props) {
                         <SortableHeader label="Status" sortKey="status" currentSort={params.sort} basePath="/projects" />
                       </th>
                       <th className="px-6 py-3">
-                        <SortableHeader label="Priority" sortKey="priority_high" currentSort={params.sort} basePath="/projects" />
+                        <SortableHeader label="Priority" sortKey="priority" currentSort={params.sort} basePath="/projects" />
                       </th>
                       <th className="px-6 py-3">
                         <SortableHeader label="Due Date" sortKey="due_date" currentSort={params.sort} basePath="/projects" />
