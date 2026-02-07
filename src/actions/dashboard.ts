@@ -133,3 +133,20 @@ export async function getClientCount() {
     return 0
   }
 }
+
+export async function getTasksDueThisWeek() {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const weekFromNow = new Date(today)
+  weekFromNow.setDate(weekFromNow.getDate() + 7)
+
+  return prisma.task.count({
+    where: {
+      completed: false,
+      dueDate: {
+        gte: today,
+        lte: weekFromNow,
+      },
+    },
+  })
+}

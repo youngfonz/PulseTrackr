@@ -9,16 +9,18 @@ import {
   getTasksDueToday,
   getOverdueTasks,
   getRecentProjects,
+  getTasksDueThisWeek,
 } from '@/actions/dashboard'
 import { statusColors, statusLabels, priorityColors, priorityLabels, formatDate } from '@/lib/utils'
 
 export default async function DashboardPage() {
-  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentProjects] = await Promise.all([
+  const [stats, projectsDueThisWeek, tasksDueToday, overdueTasks, recentProjects, tasksDueThisWeekCount] = await Promise.all([
     getDashboardStats(),
     getProjectsDueThisWeek(),
     getTasksDueToday(),
     getOverdueTasks(),
     getRecentProjects(),
+    getTasksDueThisWeek(),
   ])
 
   return (
@@ -100,14 +102,14 @@ export default async function DashboardPage() {
                   strokeDasharray={`${stats.totalTasks > 0 ? ((stats.totalTasks - stats.pendingTasks) / stats.totalTasks) * 201 : 0} 201`}
                   className="drop-shadow-sm"
                 />
-                {/* Inner ring - On track indicator */}
+                {/* Inner ring - Due this week */}
                 <circle
                   cx="50" cy="50" r="22"
                   fill="none"
-                  stroke={overdueTasks.length > 0 ? "url(#overdueGradient)" : "url(#onTrackGradient)"}
+                  stroke="url(#dueWeekGradient)"
                   strokeWidth="6"
                   strokeLinecap="round"
-                  strokeDasharray={overdueTasks.length > 0 ? `${Math.min((overdueTasks.length / Math.max(stats.totalTasks, 1)) * 138, 138)} 138` : "138 138"}
+                  strokeDasharray={`${stats.pendingTasks > 0 ? Math.min((tasksDueThisWeekCount / stats.pendingTasks) * 138, 138) : 0} 138`}
                   className="drop-shadow-sm"
                 />
 
@@ -121,26 +123,16 @@ export default async function DashboardPage() {
                     <stop offset="0%" stopColor="#60a5fa" />
                     <stop offset="100%" stopColor="#3b82f6" />
                   </linearGradient>
-                  <linearGradient id="onTrackGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <linearGradient id="dueWeekGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                     <stop offset="0%" stopColor="#4ade80" />
                     <stop offset="100%" stopColor="#22c55e" />
-                  </linearGradient>
-                  <linearGradient id="overdueGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#fbbf24" />
-                    <stop offset="100%" stopColor="#f59e0b" />
                   </linearGradient>
                 </defs>
               </svg>
 
               {/* Center icon */}
               <div className="absolute inset-0 flex items-center justify-center">
-                {overdueTasks.length === 0 ? (
-                  <svg className="w-8 h-8 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  <span className="text-xl font-bold text-amber-500">{overdueTasks.length}</span>
-                )}
+                <span className="text-xl font-bold text-emerald-500">{tasksDueThisWeekCount}</span>
               </div>
             </div>
 
@@ -163,14 +155,10 @@ export default async function DashboardPage() {
               </Link>
 
               <Link href="/tasks" className="group flex items-center gap-3 p-3 rounded-xl hover:bg-muted/50 transition-colors">
-                <div className={`w-3 h-3 rounded-full shadow-sm ${overdueTasks.length > 0 ? 'bg-gradient-to-r from-amber-400 to-amber-500 shadow-amber-500/50' : 'bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-emerald-500/50'}`} />
+                <div className="w-3 h-3 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-500 shadow-sm shadow-emerald-500/50" />
                 <div>
-                  <div className={`text-2xl font-bold ${overdueTasks.length > 0 ? 'text-amber-500' : 'text-emerald-500'}`}>
-                    {overdueTasks.length > 0 ? overdueTasks.length : '✓'}
-                  </div>
-                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
-                    {overdueTasks.length > 0 ? 'Need Attention' : 'On Track'}
-                  </div>
+                  <div className="text-2xl font-bold text-emerald-500">{tasksDueThisWeekCount}</div>
+                  <div className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">Due This Week</div>
                 </div>
               </Link>
             </div>
