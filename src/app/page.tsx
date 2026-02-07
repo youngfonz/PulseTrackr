@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { DashboardCalendar } from '@/components/DashboardCalendar'
+import { DashboardGreeting } from '@/components/DashboardGreeting'
 import {
   getDashboardStats,
   getProjectsDueThisWeek,
@@ -26,10 +27,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-4 md:space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Plan, prioritize, and accomplish your tasks with ease.</p>
-        </div>
+        <DashboardGreeting />
         <div className="flex gap-2 sm:gap-3">
           <Link href="/tasks" className="flex-1 sm:flex-none">
             <Button variant="secondary" className="w-full sm:w-auto flex items-center justify-center gap-2">
