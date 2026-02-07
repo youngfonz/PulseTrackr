@@ -27,20 +27,27 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const clientCount = await getClientCount();
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  const innerContent = (
+    <ThemeProvider>
+      <LayoutWrapper clientCount={clientCount}>
+        {children}
+      </LayoutWrapper>
+    </ThemeProvider>
+  );
 
   return (
-    <ClerkProvider>
-      <html lang="en" suppressHydrationWarning>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          <ThemeProvider>
-            <LayoutWrapper clientCount={clientCount}>
-              {children}
-            </LayoutWrapper>
-          </ThemeProvider>
-        </body>
-      </html>
-    </ClerkProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        {clerkKey ? (
+          <ClerkProvider publishableKey={clerkKey}>
+            {innerContent}
+          </ClerkProvider>
+        ) : (
+          innerContent
+        )}
+      </body>
+    </html>
   );
 }

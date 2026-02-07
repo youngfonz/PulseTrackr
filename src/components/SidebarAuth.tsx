@@ -8,6 +8,13 @@ interface SidebarAuthProps {
 }
 
 export function SidebarAuth({ isCollapsed }: SidebarAuthProps) {
+  // Check if Clerk is configured - this env var is baked in at build time
+  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+
+  if (!clerkKey) {
+    return null;
+  }
+
   return (
     <div className="border-t border-sidebar-border p-3">
       <SignedOut>
