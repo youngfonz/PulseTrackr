@@ -57,7 +57,12 @@ export default async function ClientDetailPage({ params }: Props) {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Projects ({client.projects.length})</CardTitle>
               <Link href={`/projects/new?clientId=${client.id}`}>
-                <Button size="sm">Add Project</Button>
+                <Button size="sm" className="flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Add Project
+                </Button>
               </Link>
             </CardHeader>
             <CardContent className="p-0">
