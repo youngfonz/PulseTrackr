@@ -72,7 +72,7 @@ async function fetchTwitterMetadata(url: string): Promise<BookmarkMetadata | nul
 
       // Extract tweet text from HTML (remove HTML tags)
       if (data.html) {
-        const textMatch = data.html.match(/<p[^>]*>(.*?)<\/p>/s);
+        const textMatch = data.html.match(/<p[^>]*>([\s\S]*?)<\/p>/);
         if (textMatch) {
           tweetText = textMatch[1]
             .replace(/<[^>]*>/g, '')
