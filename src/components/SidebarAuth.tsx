@@ -1,6 +1,6 @@
 'use client'
 
-import { SignInButton, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
+import { SignInButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs'
 import { cn } from '@/lib/utils'
 
 interface SidebarAuthProps {
@@ -11,36 +11,39 @@ export function SidebarAuth({ isCollapsed }: SidebarAuthProps) {
   return (
     <div className="border-t border-sidebar-border p-3">
       <SignedOut>
-        {!isCollapsed ? (
-          <div className="space-y-2">
-            <SignInButton mode="modal">
-              <button className="w-full px-3 py-2 text-sm font-medium bg-primary text-primary-foreground rounded hover:bg-primary/90 transition-colors">
-                Sign In
-              </button>
-            </SignInButton>
-            <SignUpButton mode="modal">
-              <button className="w-full px-3 py-2 text-sm font-medium border border-border rounded hover:bg-secondary transition-colors text-sidebar-foreground">
-                Sign Up
-              </button>
-            </SignUpButton>
-          </div>
-        ) : (
-          <SignInButton mode="modal">
-            <button className="w-full p-2 rounded hover:bg-secondary transition-colors" title="Sign In">
-              <svg className="h-5 w-5 text-sidebar-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <SignInButton mode="modal">
+          <button
+            className={cn(
+              "flex items-center gap-3 w-full rounded-lg transition-colors hover:bg-secondary/80",
+              isCollapsed ? "justify-center p-2" : "px-3 py-2.5"
+            )}
+            title={isCollapsed ? "Sign In" : undefined}
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-600 dark:to-gray-700 flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-            </button>
-          </SignInButton>
-        )}
+            </div>
+            {!isCollapsed && (
+              <span className="text-sm font-medium text-sidebar-foreground">Sign in</span>
+            )}
+          </button>
+        </SignInButton>
       </SignedOut>
       <SignedIn>
-        <div className={cn("flex items-center gap-3 p-2 rounded hover:bg-secondary transition-colors", isCollapsed && "justify-center")}>
+        <div className={cn(
+          "flex items-center w-full rounded-lg",
+          isCollapsed ? "justify-center" : ""
+        )}>
           <UserButton
             appearance={{
               elements: {
-                avatarBox: "w-9 h-9",
+                avatarBox: "w-8 h-8",
                 userButtonPopoverCard: "shadow-lg",
+                userButtonTrigger: cn(
+                  "flex items-center gap-3 w-full rounded-lg transition-colors hover:bg-secondary/80 focus:outline-none focus:ring-0",
+                  isCollapsed ? "justify-center p-2" : "px-3 py-2.5"
+                ),
               }
             }}
             showName={!isCollapsed}
