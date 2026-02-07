@@ -20,7 +20,7 @@ export function LayoutWrapper({ children, clientCount, clerkEnabled = false }: L
   return (
     <div className="flex min-h-screen bg-background">
       <Sidebar clientCount={clientCount} clerkEnabled={clerkEnabled} />
-      <main className="flex-1 overflow-auto pt-14 md:pt-0">
+      <main className="flex-1 overflow-x-hidden overflow-y-auto pt-14 md:pt-0">
         <div className="p-4 md:p-8">{children}</div>
       </main>
     </div>
