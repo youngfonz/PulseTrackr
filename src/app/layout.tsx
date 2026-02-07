@@ -28,27 +28,7 @@ export default async function RootLayout({
 }>) {
   const clientCount = await getClientCount();
 
-  const hasClerkKeys = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY && process.env.CLERK_SECRET_KEY;
-
-  if (hasClerkKeys) {
-    return (
-      <ClerkProvider>
-        <html lang="en" suppressHydrationWarning>
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <ThemeProvider>
-              <LayoutWrapper clientCount={clientCount}>
-                {children}
-              </LayoutWrapper>
-            </ThemeProvider>
-          </body>
-        </html>
-      </ClerkProvider>
-    );
-  }
-
-  return (
+  const content = (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -61,4 +41,11 @@ export default async function RootLayout({
       </body>
     </html>
   );
+
+  // Only wrap with ClerkProvider if keys are configured
+  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
+    return <ClerkProvider>{content}</ClerkProvider>;
+  }
+
+  return content;
 }
