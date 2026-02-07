@@ -35,13 +35,15 @@ export function SidebarAuth({ isCollapsed }: SidebarAuthProps) {
         )}
       </SignedOut>
       <SignedIn>
-        <div className={cn("flex items-center gap-2", isCollapsed && "justify-center")}>
+        <div className={cn("flex items-center gap-3 p-2 rounded hover:bg-secondary transition-colors", isCollapsed && "justify-center")}>
           <UserButton
             appearance={{
               elements: {
-                avatarBox: "w-9 h-9"
+                avatarBox: "w-9 h-9",
+                userButtonPopoverCard: "shadow-lg",
               }
             }}
+            showName={!isCollapsed}
           />
         </div>
       </SignedIn>
