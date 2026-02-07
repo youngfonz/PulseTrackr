@@ -27,11 +27,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const clientCount = await getClientCount();
-  const clerkKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const clerkEnabled = !!process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
   const innerContent = (
     <ThemeProvider>
-      <LayoutWrapper clientCount={clientCount}>
+      <LayoutWrapper clientCount={clientCount} clerkEnabled={clerkEnabled}>
         {children}
       </LayoutWrapper>
     </ThemeProvider>
@@ -40,8 +40,8 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        {clerkKey ? (
-          <ClerkProvider publishableKey={clerkKey}>
+        {clerkEnabled ? (
+          <ClerkProvider>
             {innerContent}
           </ClerkProvider>
         ) : (

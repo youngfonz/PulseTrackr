@@ -67,9 +67,10 @@ const getNavigation = (clientCount?: number) => [
 
 interface SidebarProps {
   clientCount?: number
+  clerkEnabled?: boolean
 }
 
-export function Sidebar({ clientCount }: SidebarProps) {
+export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
@@ -236,7 +237,7 @@ export function Sidebar({ clientCount }: SidebarProps) {
         </nav>
 
         {/* Auth Section */}
-        <SidebarAuth isCollapsed={isCollapsed} />
+        {clerkEnabled && <SidebarAuth isCollapsed={isCollapsed} />}
       </div>
     </>
   )
