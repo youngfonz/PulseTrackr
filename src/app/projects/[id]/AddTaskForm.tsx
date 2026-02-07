@@ -9,7 +9,7 @@ import { VoiceInput } from '@/components/ui/VoiceInput'
 import { createTask } from '@/actions/tasks'
 import { parseTaskFromVoice } from '@/lib/voice'
 
-export function AddTaskForm({ projectId }: { projectId: string }) {
+export function AddTaskForm({ projectId, onSuccess }: { projectId: string; onSuccess?: () => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -38,6 +38,9 @@ export function AddTaskForm({ projectId }: { projectId: string }) {
       setPriority('medium')
       setDueDate('')
       setNotes('')
+      if (onSuccess) {
+        onSuccess()
+      }
     })
   }
 

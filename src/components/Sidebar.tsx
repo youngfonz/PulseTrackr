@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
@@ -71,8 +71,20 @@ interface SidebarProps {
 export function Sidebar({ clientCount }: SidebarProps) {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const { theme, toggleTheme } = useTheme()
   const navigation = getNavigation(clientCount)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sidebar-collapsed')
+    if (stored) setIsCollapsed(stored === 'true')
+  }, [])
+
+  const toggleCollapse = () => {
+    const newState = !isCollapsed
+    setIsCollapsed(newState)
+    localStorage.setItem('sidebar-collapsed', String(newState))
+  }
 
   return (
     <>
@@ -129,34 +141,66 @@ export function Sidebar({ clientCount }: SidebarProps) {
       {/* Sidebar */}
       <div
         className={cn(
-          'fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-sidebar-border bg-sidebar transition-transform duration-200 md:static md:translate-x-0',
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+          'fixed inset-y-0 left-0 z-50 flex flex-col border-r border-sidebar-border bg-sidebar transition-all duration-200 md:static md:translate-x-0',
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+          isCollapsed ? 'md:w-16' : 'w-64'
         )}
       >
-        <div className="flex h-14 md:h-16 items-center justify-between border-b border-sidebar-border px-6">
+        <div className={cn(
+          "flex h-14 md:h-16 items-center border-b border-sidebar-border",
+          isCollapsed ? "justify-center px-3" : "justify-between px-4"
+        )}>
+          {!isCollapsed && (
+            <button
+              onClick={toggleCollapse}
+              className="hidden md:flex p-2 text-sidebar-foreground hover:bg-secondary rounded"
+              title="Collapse sidebar"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+          )}
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7  bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </div>
-            <h1 className="text-xl font-bold text-sidebar-foreground">Pulse</h1>
-          </div>
-          <button
-            onClick={toggleTheme}
-            className="hidden md:flex  p-2 text-sidebar-foreground hover:bg-secondary"
-            title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {theme === 'dark' ? (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            ) : (
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
+            {isCollapsed && (
+              <button
+                onClick={toggleCollapse}
+                className="hidden md:flex p-1 text-sidebar-foreground hover:bg-secondary rounded"
+                title="Expand sidebar"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
             )}
-          </button>
+            {!isCollapsed && (
+              <>
+                <div className="w-7 h-7 bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h1 className="text-xl font-bold text-sidebar-foreground">Pulse</h1>
+              </>
+            )}
+          </div>
+          {!isCollapsed && (
+            <button
+              onClick={toggleTheme}
+              className="hidden md:flex p-2 text-sidebar-foreground hover:bg-secondary rounded"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {theme === 'dark' ? (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
+            </button>
+          )}
         </div>
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navigation.map((item) => {
@@ -167,17 +211,23 @@ export function Sidebar({ clientCount }: SidebarProps) {
                 key={item.name}
                 href={item.href}
                 onClick={() => setIsOpen(false)}
+                title={isCollapsed ? item.name : undefined}
                 className={cn(
-                  'flex items-center gap-3  px-3 py-2 text-sm font-medium transition-colors',
+                  'flex items-center gap-3 px-3 py-2 text-sm font-medium transition-colors rounded',
                   isActive
                     ? 'bg-sidebar-accent text-accent-foreground'
-                    : 'text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground'
+                    : 'text-sidebar-foreground hover:bg-secondary hover:text-secondary-foreground',
+                  isCollapsed && 'justify-center'
                 )}
               >
                 {item.icon}
-                <span className="flex-1">{item.name}</span>
-                {'count' in item && item.count !== undefined && (
-                  <span className="text-xs text-muted-foreground">({item.count})</span>
+                {!isCollapsed && (
+                  <>
+                    <span className="flex-1">{item.name}</span>
+                    {'count' in item && item.count !== undefined && (
+                      <span className="text-xs text-muted-foreground">({item.count})</span>
+                    )}
+                  </>
                 )}
               </Link>
             )

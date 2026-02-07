@@ -9,6 +9,9 @@ export async function getTask(id: string) {
     include: {
       images: true,
       files: true,
+      comments: {
+        orderBy: { createdAt: 'desc' },
+      },
       project: {
         select: {
           id: true,
@@ -417,4 +420,90 @@ export async function getProjectsForTaskFilter() {
     },
     orderBy: { name: 'asc' },
   })
+}
+
+export async function addTaskComment(taskId: string, content: string) {
+  const task = await prisma.task.findUnique({
+    where: { id: taskId },
+    select: { projectId: true },
+  })
+
+  if (!task) return
+
+  await prisma.taskComment.create({
+    data: {
+      content,
+      taskId,
+    },
+  })
+  revalidatePath(`/projects/${task.projectId}`)
+}
+
+export async function deleteTaskComment(commentId: string) {
+  const comment = await prisma.taskComment.findUnique({
+    where: { id: commentId },
+    include: {
+      task: {
+        select: { projectId: true },
+      },
+    },
+  })
+
+  if (!comment) return
+
+  await prisma.taskComment.delete({
+    where: { id: commentId },
+  })
+  revalidatePath(`/projects/${comment.task.projectId}`)
+}
+
+export async function createBookmarkTask(
+  projectId: string,
+  data: {
+    url: string
+    title: string
+    description?: string
+    thumbnailUrl?: string
+    bookmarkType: 'youtube' | 'twitter'
+    tags?: string[]
+    priority?: string
+    dueDate?: string
+    notes?: string
+  }
+) {
+  const taskData = {
+    title: data.title,
+    description: data.description || null,
+    notes: data.notes || null,
+    priority: data.priority || 'medium',
+    dueDate: data.dueDate ? new Date(data.dueDate) : null,
+    projectId,
+    url: data.url,
+    bookmarkType: data.bookmarkType,
+    thumbnailUrl: data.thumbnailUrl || null,
+    tags: data.tags || [],
+  }
+
+  await prisma.task.create({ data: taskData })
+  revalidatePath(`/projects/${projectId}`)
+}
+
+export async function getAllTags() {
+  const tasks = await prisma.task.findMany({
+    where: {
+      tags: {
+        isEmpty: false,
+      },
+    },
+    select: {
+      tags: true,
+    },
+  })
+
+  const allTags = new Set<string>()
+  tasks.forEach((task) => {
+    task.tags.forEach((tag) => allTags.add(tag))
+  })
+
+  return Array.from(allTags).sort()
 }

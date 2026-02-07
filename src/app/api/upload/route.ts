@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
 
+// Configure route for larger file uploads
+export const maxDuration = 60 // 60 seconds
+
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
@@ -11,14 +14,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No file provided' }, { status: 400 })
     }
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      return NextResponse.json({ error: 'Only image files are allowed' }, { status: 400 })
+    // Validate file type - allow images and PDFs
+    const allowedTypes = [
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'application/pdf'
+    ]
+
+    if (!allowedTypes.includes(file.type)) {
+      return NextResponse.json({
+        error: 'Invalid file type. Only images (JPEG, PNG, GIF, WebP) and PDFs are allowed'
+      }, { status: 400 })
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Image must be less than 5MB' }, { status: 400 })
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      return NextResponse.json({ error: 'File must be less than 10MB' }, { status: 400 })
     }
 
     // Create unique filename

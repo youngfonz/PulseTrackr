@@ -62,20 +62,26 @@ model ProjectImage {
 }
 
 model Task {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  notes       String?
-  completed   Boolean  @default(false)
-  priority    String   @default("medium") // low, medium, high
-  startDate   DateTime?
-  dueDate     DateTime?
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  images      TaskImage[]
-  files       TaskFile[]
+  id           String   @id @default(cuid())
+  title        String
+  description  String?
+  notes        String?
+  completed    Boolean  @default(false)
+  priority     String   @default("medium") // low, medium, high
+  startDate    DateTime?
+  dueDate      DateTime?
+  projectId    String
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  // Bookmark fields
+  url          String?  // Bookmarked URL
+  bookmarkType String?  // "youtube" | "twitter" | null
+  thumbnailUrl String?  // External thumbnail URL
+  tags         String[] @default([]) // Tag array
+  images       TaskImage[]
+  files        TaskFile[]
+  comments     TaskComment[]
 }
 
 model TaskImage {
@@ -96,4 +102,13 @@ model TaskFile {
   taskId    String
   task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
+}
+
+model TaskComment {
+  id        String   @id @default(cuid())
+  content   String
+  taskId    String
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

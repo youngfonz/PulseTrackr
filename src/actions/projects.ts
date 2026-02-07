@@ -127,6 +127,9 @@ export async function getProject(id: string) {
         include: {
           images: true,
           files: true,
+          comments: {
+            orderBy: { createdAt: 'desc' },
+          },
         },
         orderBy: [
           { completed: 'asc' },

@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 import { Modal } from '@/components/ui/Modal'
-import { toggleTask, deleteTask, updateTask, addTaskImage, removeTaskImage, addTaskFile, removeTaskFile } from '@/actions/tasks'
+import { FileUpload } from '@/components/ui/FileUpload'
+import { toggleTask, deleteTask, updateTask, addTaskImage, removeTaskImage, addTaskFile, removeTaskFile, addTaskComment, deleteTaskComment } from '@/actions/tasks'
 import { priorityColors, priorityLabels, formatDate, isOverdue, formatFileSize, getFileIcon } from '@/lib/utils'
 
 interface TaskImage {
@@ -25,6 +26,13 @@ interface TaskFile {
   size: number
 }
 
+interface TaskComment {
+  id: string
+  content: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 interface Task {
   id: string
   title: string
@@ -34,8 +42,13 @@ interface Task {
   priority: string
   startDate: Date | null
   dueDate: Date | null
+  url: string | null
+  bookmarkType: string | null
+  thumbnailUrl: string | null
+  tags: string[]
   images: TaskImage[]
   files: TaskFile[]
+  comments: TaskComment[]
 }
 
 export function TaskList({ tasks }: { tasks: Task[] }) {
@@ -80,10 +93,25 @@ function TaskItem({ task }: { task: Task }) {
     return new Date(date).toISOString().split('T')[0]
   }
 
+  const isBookmark = !!task.url && !!task.bookmarkType
+
   return (
     <>
       <div className={`py-3 ${isPending ? 'opacity-50' : ''}`}>
         <div className="flex items-start gap-3">
+          {isBookmark && task.thumbnailUrl && (
+            <button
+              onClick={() => window.open(task.url!, '_blank')}
+              className="flex-shrink-0 w-16 h-16 overflow-hidden rounded border border-border hover:opacity-80 transition-opacity cursor-pointer"
+              title="Open bookmark"
+            >
+              <img
+                src={task.thumbnailUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            </button>
+          )}
           <button
             onClick={handleToggle}
             className={`mt-0.5 h-5 w-5 flex-shrink-0 rounded border-2 transition-colors ${
@@ -106,9 +134,37 @@ function TaskItem({ task }: { task: Task }) {
               >
                 {task.title}
               </button>
+              {isBookmark && (
+                <a
+                  href={task.url!}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-muted-foreground hover:text-link"
+                  title="Open bookmark"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </a>
+              )}
+              {isBookmark && (
+                <span className={`text-xs px-1.5 py-0.5 rounded ${
+                  task.bookmarkType === 'youtube'
+                    ? 'bg-red-100 text-red-700'
+                    : 'bg-blue-100 text-blue-700'
+                }`}>
+                  {task.bookmarkType === 'youtube' ? 'YouTube' : 'X'}
+                </span>
+              )}
               <Badge className={`${priorityColors[task.priority]} text-xs`}>
                 {priorityLabels[task.priority]}
               </Badge>
+              {task.tags.length > 0 && task.tags.map((tag) => (
+                <span key={tag} className="text-xs px-1.5 py-0.5 bg-gray-100 text-gray-700 rounded">
+                  {tag}
+                </span>
+              ))}
               {task.images.length > 0 && (
                 <span className="text-xs text-muted-foreground">
                   {task.images.length} image{task.images.length > 1 ? 's' : ''}
@@ -191,6 +247,7 @@ function TaskItem({ task }: { task: Task }) {
                 </div>
               </div>
             )}
+            <TaskComments taskId={task.id} comments={task.comments} />
           </div>
         )}
       </div>
@@ -215,8 +272,6 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
   const [isPending, startTransition] = useTransition()
   const [images, setImages] = useState<TaskImage[]>(task.images)
   const [files, setFiles] = useState<TaskFile[]>(task.files)
-  const [isUploadingImage, setIsUploadingImage] = useState(false)
-  const [isUploadingFile, setIsUploadingFile] = useState(false)
 
   const formatDateForInput = (date: Date | null) => {
     if (!date) return ''
@@ -230,65 +285,14 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
     })
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    if (!file.type.startsWith('image/')) {
-      alert('Please select an image file')
-      return
-    }
-
-    setIsUploadingImage(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('type', 'tasks')
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) throw new Error('Upload failed')
-
-      const data = await response.json()
-      await addTaskImage(task.id, data.path, data.name)
-      setImages([...images, { id: Date.now().toString(), path: data.path, name: data.name }])
-    } catch (err) {
-      alert('Failed to upload image')
-    } finally {
-      setIsUploadingImage(false)
-      e.target.value = ''
-    }
+  const handleImageUploadComplete = async (file: { path: string; name: string; type: string; size: number }) => {
+    await addTaskImage(task.id, file.path, file.name)
+    setImages([...images, { id: Date.now().toString(), path: file.path, name: file.name }])
   }
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-
-    setIsUploadingFile(true)
-    try {
-      const formData = new FormData()
-      formData.append('file', file)
-      formData.append('type', 'task-files')
-
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) throw new Error('Upload failed')
-
-      const data = await response.json()
-      await addTaskFile(task.id, data.path, data.name, data.type, data.size)
-      setFiles([...files, { id: Date.now().toString(), path: data.path, name: data.name, type: data.type, size: data.size }])
-    } catch (err) {
-      alert('Failed to upload file')
-    } finally {
-      setIsUploadingFile(false)
-      e.target.value = ''
-    }
+  const handleFileUploadComplete = async (file: { path: string; name: string; type: string; size: number }) => {
+    await addTaskFile(task.id, file.path, file.name, file.type, file.size)
+    setFiles([...files, { id: Date.now().toString(), path: file.path, name: file.name, type: file.type, size: file.size }])
   }
 
   const handleRemoveImage = async (imageId: string) => {
@@ -375,20 +379,13 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
               </button>
             </div>
           ))}
-          <label className={`flex h-20 w-20 cursor-pointer flex-col items-center justify-center  border-2 border-dashed border-border text-muted-foreground hover:border-muted-foreground ${isUploadingImage ? 'opacity-50' : ''}`}>
-            <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-            </svg>
-            <span className="text-xs">{isUploadingImage ? 'Uploading...' : 'Add'}</span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="hidden"
-              disabled={isUploadingImage}
-            />
-          </label>
         </div>
+        <FileUpload
+          onUploadComplete={handleImageUploadComplete}
+          accept="image/*"
+          maxSize={10}
+          label="Add image"
+        />
       </div>
 
       {/* Task Files */}
@@ -411,20 +408,13 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
               </button>
             </div>
           ))}
-          <label className={`flex cursor-pointer items-center justify-center gap-2  border-2 border-dashed border-border px-4 py-3 text-sm text-muted-foreground hover:border-muted-foreground ${isUploadingFile ? 'opacity-50' : ''}`}>
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
-            </svg>
-            <span>{isUploadingFile ? 'Uploading...' : 'Add file (PDF, MD, DOC, etc.)'}</span>
-            <input
-              type="file"
-              accept=".pdf,.md,.doc,.docx,.txt,.rtf,.xls,.xlsx,.csv,.ppt,.pptx,.zip"
-              onChange={handleFileUpload}
-              className="hidden"
-              disabled={isUploadingFile}
-            />
-          </label>
         </div>
+        <FileUpload
+          onUploadComplete={handleFileUploadComplete}
+          accept="image/*,application/pdf"
+          maxSize={10}
+          label="Add file (PDF or Image, up to 10MB)"
+        />
       </div>
 
       <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row">
@@ -436,5 +426,105 @@ function TaskEditForm({ task, onClose }: { task: Task; onClose: () => void }) {
         </Button>
       </div>
     </form>
+  )
+}
+
+function TaskComments({ taskId, comments }: { taskId: string; comments: TaskComment[] }) {
+  const [isPending, startTransition] = useTransition()
+  const [newComment, setNewComment] = useState('')
+  const [localComments, setLocalComments] = useState(comments)
+
+  const handleAddComment = () => {
+    if (!newComment.trim()) return
+
+    startTransition(async () => {
+      await addTaskComment(taskId, newComment)
+      setLocalComments([
+        { id: Date.now().toString(), content: newComment, createdAt: new Date(), updatedAt: new Date() },
+        ...localComments,
+      ])
+      setNewComment('')
+    })
+  }
+
+  const handleDeleteComment = (commentId: string) => {
+    if (!confirm('Delete this comment?')) return
+
+    startTransition(async () => {
+      await deleteTaskComment(commentId)
+      setLocalComments(localComments.filter((c) => c.id !== commentId))
+    })
+  }
+
+  const formatCommentDate = (date: Date) => {
+    const now = new Date()
+    const commentDate = new Date(date)
+    const diffMs = now.getTime() - commentDate.getTime()
+    const diffMins = Math.floor(diffMs / 60000)
+    const diffHours = Math.floor(diffMs / 3600000)
+    const diffDays = Math.floor(diffMs / 86400000)
+
+    if (diffMins < 1) return 'Just now'
+    if (diffMins < 60) return `${diffMins}m ago`
+    if (diffHours < 24) return `${diffHours}h ago`
+    if (diffDays < 7) return `${diffDays}d ago`
+    return formatDate(date)
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-medium text-muted-foreground">
+        Comments ({localComments.length})
+      </p>
+
+      {/* Add comment form */}
+      <div className="space-y-2">
+        <Textarea
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          placeholder="Add a comment..."
+          rows={2}
+          className="text-sm"
+        />
+        <Button
+          type="button"
+          size="sm"
+          onClick={handleAddComment}
+          disabled={!newComment.trim() || isPending}
+        >
+          {isPending ? 'Adding...' : 'Add Comment'}
+        </Button>
+      </div>
+
+      {/* Comments list */}
+      {localComments.length > 0 && (
+        <div className="space-y-2">
+          {localComments.map((comment) => (
+            <div
+              key={comment.id}
+              className="border border-border bg-muted/30 p-3 space-y-2"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm text-foreground whitespace-pre-wrap flex-1">
+                  {comment.content}
+                </p>
+                <button
+                  onClick={() => handleDeleteComment(comment.id)}
+                  className="flex-shrink-0 p-1 text-muted-foreground hover:text-destructive transition-colors"
+                  title="Delete comment"
+                >
+                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {formatCommentDate(comment.createdAt)}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
