@@ -149,7 +149,7 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
         )}
       >
         <div className={cn(
-          "flex h-14 md:h-16 items-center border-b border-sidebar-border",
+          "flex h-14 md:h-16 items-center",
           isCollapsed ? "justify-center px-3" : "justify-between px-4"
         )}>
           {!isCollapsed && (
@@ -220,7 +220,10 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
         </nav>
 
         {/* Bottom section */}
-        <div className="flex-shrink-0 border-t border-sidebar-border px-3 py-3 space-y-1">
+        <div className={cn(
+          "flex-shrink-0 mb-3 py-2 space-y-1 rounded-lg bg-muted/40",
+          isCollapsed ? "mx-2 px-0" : "mx-3 px-0"
+        )}>
           <button
             onClick={toggleTheme}
             title={isCollapsed ? (theme === 'dark' ? 'Light mode' : 'Dark mode') : undefined}
