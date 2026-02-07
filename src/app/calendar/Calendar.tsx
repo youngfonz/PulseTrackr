@@ -59,6 +59,7 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
   ]
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const dayNamesShort = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
   const getDaysInMonth = (year: number, month: number) => {
     return new Date(year, month + 1, 0).getDate()
@@ -148,11 +149,11 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Button variant="ghost" size="sm" onClick={prevMonth}>
             &larr;
           </Button>
-          <h2 className="text-lg font-semibold text-foreground min-w-[180px] text-center">
+          <h2 className="text-base sm:text-lg font-semibold text-foreground min-w-[140px] sm:min-w-[180px] text-center">
             {monthNames[month]} {year}
           </h2>
           <Button variant="ghost" size="sm" onClick={nextMonth}>
@@ -169,12 +170,13 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
         <div className="lg:col-span-2">
           {/* Day headers */}
           <div className="grid grid-cols-7 gap-px bg-border rounded-t-lg overflow-hidden">
-            {dayNames.map((day) => (
+            {dayNames.map((day, i) => (
               <div
                 key={day}
-                className="bg-muted py-2 text-center text-sm font-medium text-muted-foreground"
+                className="bg-muted py-2 text-center text-xs sm:text-sm font-medium text-muted-foreground"
               >
-                {day}
+                <span className="hidden sm:inline">{day}</span>
+                <span className="sm:hidden">{dayNamesShort[i]}</span>
               </div>
             ))}
           </div>
@@ -195,14 +197,14 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                 <div
                   key={index}
                   onClick={() => day && setSelectedDate(new Date(year, month, day))}
-                  className={`min-h-[80px] sm:min-h-[100px] p-1 sm:p-2 bg-card transition-colors ${
+                  className={`min-h-[56px] sm:min-h-[100px] p-1 sm:p-2 bg-card transition-colors ${
                     day ? 'cursor-pointer hover:bg-muted/50' : ''
                   } ${isSelected(day!) ? 'ring-2 ring-primary ring-inset' : ''}`}
                 >
                   {day && (
                     <>
                       <div
-                        className={`text-sm font-medium mb-1 w-7 h-7 flex items-center justify-center  ${
+                        className={`text-xs sm:text-sm font-medium mb-1 w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-full ${
                           isToday(day)
                             ? 'bg-primary text-primary-foreground'
                             : 'text-foreground'
@@ -211,29 +213,47 @@ export function Calendar({ initialYear, initialMonth }: CalendarProps) {
                         {day}
                       </div>
                       {hasTasks && (
-                        <div className="space-y-0.5">
-                          {dayTasks.slice(0, 2).map((task) => (
-                            <div
-                              key={task.id}
-                              className={`text-xs truncate rounded px-1 py-0.5 font-medium ${
-                                task.completed
-                                  ? 'bg-emerald-600 text-white line-through'
-                                  : hasOverdue
-                                  ? 'bg-rose-600 text-white'
-                                  : task.priority === 'high'
-                                  ? 'bg-rose-500 text-white'
-                                  : 'bg-blue-600 text-white'
-                              }`}
-                            >
-                              {task.title}
-                            </div>
-                          ))}
-                          {dayTasks.length > 2 && (
-                            <div className="text-xs text-muted-foreground px-1">
-                              +{dayTasks.length - 2} more
-                            </div>
-                          )}
-                        </div>
+                        <>
+                          {/* Mobile: dots only */}
+                          <div className="flex gap-0.5 sm:hidden">
+                            {dayTasks.slice(0, 3).map((task) => (
+                              <div
+                                key={task.id}
+                                className={`w-1.5 h-1.5 rounded-full ${
+                                  task.completed
+                                    ? 'bg-emerald-500'
+                                    : task.priority === 'high'
+                                    ? 'bg-rose-500'
+                                    : 'bg-blue-500'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          {/* Desktop: task labels */}
+                          <div className="hidden sm:block space-y-0.5">
+                            {dayTasks.slice(0, 2).map((task) => (
+                              <div
+                                key={task.id}
+                                className={`text-xs truncate rounded px-1 py-0.5 font-medium ${
+                                  task.completed
+                                    ? 'bg-emerald-600 text-white line-through'
+                                    : hasOverdue
+                                    ? 'bg-rose-600 text-white'
+                                    : task.priority === 'high'
+                                    ? 'bg-rose-500 text-white'
+                                    : 'bg-blue-600 text-white'
+                                }`}
+                              >
+                                {task.title}
+                              </div>
+                            ))}
+                            {dayTasks.length > 2 && (
+                              <div className="text-xs text-muted-foreground px-1">
+                                +{dayTasks.length - 2} more
+                              </div>
+                            )}
+                          </div>
+                        </>
                       )}
                     </>
                   )}

@@ -146,12 +146,12 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
                 }
               }}
               autoFocus
-              className="text-2xl font-bold border-b-2 border-primary bg-transparent focus:outline-none w-full"
+              className="text-xl sm:text-2xl font-bold border-b-2 border-primary bg-transparent focus:outline-none w-full"
             />
           ) : (
             <h1
               onClick={() => setIsEditingName(true)}
-              className="text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
+              className="text-xl sm:text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
             >
               {project.name}
             </h1>
@@ -211,7 +211,7 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
       </div>
 
       {/* Compact Stats Bar */}
-      <div className="flex items-center gap-6 mt-4 py-3 border-t border-b border-border text-sm">
+      <div className="grid grid-cols-2 gap-3 sm:flex sm:items-center sm:gap-6 mt-4 py-3 border-t border-b border-border text-sm">
         <div className="flex items-center gap-2">
           <span className="font-semibold">{totalTasks}</span>
           <span className="text-muted-foreground">tasks</span>

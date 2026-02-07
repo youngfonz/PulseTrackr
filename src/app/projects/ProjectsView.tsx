@@ -14,6 +14,7 @@ interface Project {
     id: string
     name: string
   }
+  tasks: { id: string; completed: boolean }[]
   _count: {
     tasks: number
   }

@@ -36,7 +36,7 @@ export function BookmarksFilter({ projects }: { projects: Project[] }) {
         onChange={(e) => updateFilter('search', e.target.value)}
         className={`flex-1 ${isPending ? 'opacity-50' : ''}`}
       />
-      <div className="flex gap-2">
+      <div className="grid grid-cols-3 gap-2 sm:flex">
         <Select
           value={searchParams.get('projectId') || 'all'}
           onChange={(e) => updateFilter('projectId', e.target.value)}
@@ -44,7 +44,7 @@ export function BookmarksFilter({ projects }: { projects: Project[] }) {
             { value: 'all', label: 'All Projects' },
             ...projects.map((p) => ({ value: p.id, label: p.name })),
           ]}
-          className="w-40"
+          className="sm:w-40"
         />
         <Select
           value={searchParams.get('type') || 'all'}
@@ -53,8 +53,9 @@ export function BookmarksFilter({ projects }: { projects: Project[] }) {
             { value: 'all', label: 'All Types' },
             { value: 'youtube', label: 'YouTube' },
             { value: 'twitter', label: 'X / Twitter' },
+            { value: 'website', label: 'Website' },
           ]}
-          className="w-32"
+          className="sm:w-32"
         />
         <Select
           value={searchParams.get('sort') || 'newest'}
@@ -65,7 +66,7 @@ export function BookmarksFilter({ projects }: { projects: Project[] }) {
             { value: 'title', label: 'Title' },
             { value: 'project', label: 'Project' },
           ]}
-          className="w-28"
+          className="sm:w-28"
         />
       </div>
     </div>

@@ -16,6 +16,7 @@ interface Project {
     id: string
     name: string
   }
+  tasks: { id: string; completed: boolean }[]
   _count: {
     tasks: number
   }
@@ -115,6 +116,9 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
           <div className="divide-y divide-border lg:hidden">
             {projects.map((project) => {
               const overdue = isOverdue(project.dueDate) && project.status !== 'completed'
+              const completedTasks = project.tasks.filter(t => t.completed).length
+              const totalTasks = project._count.tasks
+              const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
               return (
                 <Link
                   key={project.id}
@@ -138,9 +142,17 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                       {priorityLabels[project.priority]}
                     </Badge>
                     <span className="text-sm text-muted-foreground">
-                      {project._count.tasks} task{project._count.tasks !== 1 ? 's' : ''}
+                      {completedTasks}/{totalTasks} task{totalTasks !== 1 ? 's' : ''}
                     </span>
                   </div>
+                  {totalTasks > 0 && (
+                    <div className="mt-2 w-full h-1 bg-secondary rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${progress === 100 ? 'bg-emerald-500' : 'bg-primary'}`}
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  )}
                   {project.dueDate && (
                     <p className={`mt-2 text-sm ${overdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
                       Due: {formatDate(project.dueDate)}
@@ -159,6 +171,9 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {projects.map((project) => {
             const overdue = isOverdue(project.dueDate) && project.status !== 'completed'
+            const completedTasks = project.tasks.filter(t => t.completed).length
+            const totalTasks = project._count.tasks
+            const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0
             return (
               <Link key={project.id} href={`/projects/${project.id}`}>
                 <Card className="h-full hover:shadow-md transition-shadow cursor-pointer group">
@@ -183,6 +198,24 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                       </Badge>
                     </div>
 
+                    {/* Progress */}
+                    {totalTasks > 0 && (
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-muted-foreground">{completedTasks}/{totalTasks} tasks</span>
+                          <span className="font-medium text-foreground">{progress}%</span>
+                        </div>
+                        <div className="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all ${
+                              progress === 100 ? 'bg-emerald-500' : 'bg-primary'
+                            }`}
+                            style={{ width: `${progress}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+
                     {/* Due Date */}
                     {project.dueDate && (
                       <div className="pt-2 border-t border-border">
@@ -195,15 +228,15 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
                       </div>
                     )}
 
-                    {/* Tasks Count */}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                      </svg>
-                      <span>
-                        {project._count.tasks} task{project._count.tasks !== 1 ? 's' : ''}
-                      </span>
-                    </div>
+                    {/* Tasks Count (only show if no progress bar shown) */}
+                    {totalTasks === 0 && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        <span>No tasks yet</span>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </Link>

@@ -62,23 +62,23 @@ export function ProjectTabs({ projectId, tasks, timeEntries, images }: ProjectTa
   return (
     <div className="mt-6">
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
-        <nav className="-mb-px flex gap-6">
+      <div className="border-b border-border overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <nav className="-mb-px flex gap-4 sm:gap-6 min-w-max">
           {tabs.map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`
-                py-3 px-1 border-b-2 font-medium text-sm transition-colors
+                py-3 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap
                 ${activeTab === tab.id
-                  ? 'border-blue-600 text-blue-600'
-                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-gray-300'
+                  ? 'border-primary text-primary'
+                  : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
                 }
               `}
             >
               {tab.name}
               {tab.count > 0 && (
-                <span className="ml-2 py-0.5 px-2 rounded-full bg-gray-100 dark:bg-gray-800 text-xs">
+                <span className="ml-2 py-0.5 px-2 rounded-full bg-muted text-xs">
                   {tab.count}
                 </span>
               )}

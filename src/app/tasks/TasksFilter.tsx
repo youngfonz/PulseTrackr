@@ -66,7 +66,7 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority, curre
   const hasFilters = currentDate || currentStatus || currentPriority || currentProjectId
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap sm:items-center">
       <Select
         value={currentProjectId || 'all'}
         onChange={(e) => updateFilter('projectId', e.target.value)}
@@ -74,32 +74,32 @@ export function TasksFilter({ currentDate, currentStatus, currentPriority, curre
           { value: 'all', label: 'All Projects' },
           ...projects.map((p) => ({ value: p.id, label: `${p.name} (${p.client.name})` })),
         ]}
-        className="w-48"
+        className="col-span-2 sm:w-48"
       />
 
       <Select
         value={currentStatus || 'all'}
         onChange={(e) => updateFilter('status', e.target.value)}
         options={statusOptions}
-        className="w-36"
+        className="sm:w-36"
       />
 
       <Select
         value={currentPriority || 'all'}
         onChange={(e) => updateFilter('priority', e.target.value)}
         options={priorityOptions}
-        className="w-36"
+        className="sm:w-36"
       />
 
       <Select
         value={currentSort || 'due_date'}
         onChange={(e) => updateFilter('sort', e.target.value)}
         options={sortOptions}
-        className="w-44"
+        className="col-span-2 sm:w-44"
       />
 
       {hasFilters && (
-        <Button variant="ghost" size="sm" onClick={clearFilters}>
+        <Button variant="ghost" size="sm" onClick={clearFilters} className="col-span-2 sm:col-span-1">
           Clear filters
         </Button>
       )}

@@ -83,6 +83,9 @@ export async function getProjects(filters?: {
           name: true,
         },
       },
+      tasks: {
+        select: { id: true, completed: true },
+      },
       _count: {
         select: { tasks: true },
       },

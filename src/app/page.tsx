@@ -166,7 +166,7 @@ export default async function DashboardPage() {
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-4 md:gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Calendar Widget */}
         <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -271,7 +271,7 @@ export default async function DashboardPage() {
 
         {/* Overdue Tasks */}
         {overdueTasks.length > 0 && (
-          <Card className="border-red-500/50 bg-red-500/10">
+          <Card className="border-red-500/50 bg-red-500/10 md:col-span-2 lg:col-span-1">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-red-500">Overdue Tasks</CardTitle>
               <Link href="/tasks" className="text-sm text-red-500 hover:text-red-400">
