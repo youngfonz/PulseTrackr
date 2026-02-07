@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
+import { AuthGuard } from "@/components/AuthGuard";
 import { getClientCount } from "@/actions/dashboard";
 
 const geistSans = Geist({
@@ -42,7 +43,9 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         {clerkEnabled ? (
           <ClerkProvider>
-            {innerContent}
+            <AuthGuard>
+              {innerContent}
+            </AuthGuard>
           </ClerkProvider>
         ) : (
           innerContent
