@@ -35,8 +35,8 @@ export function ProjectsList({ projects, currentSort, viewMode }: Props) {
       {viewMode === 'table' && (
         <>
           {/* Desktop table */}
-          <div className="hidden lg:block">
-            <table className="w-full">
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full min-w-[800px]">
               <thead>
                 <tr className="border-b border-border text-left text-sm font-medium text-muted-foreground">
                   <th className="px-6 py-3">
