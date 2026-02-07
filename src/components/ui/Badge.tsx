@@ -5,19 +5,18 @@ interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: 'default' | 'success' | 'warning' | 'danger' | 'info'
 }
 
-// WCAG AA compliant badge - all variants have white text on solid colored backgrounds
-// for minimum 4.5:1 contrast ratio
+// Subtle, professional badge design with outline style
 export function Badge({ className, variant = 'default', children, ...props }: BadgeProps) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded px-2.5 py-0.5 text-xs font-medium whitespace-nowrap',
+        'inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium whitespace-nowrap',
         {
-          'bg-slate-500 text-white': variant === 'default',
-          'bg-emerald-600 text-white': variant === 'success',
-          'bg-amber-500 text-white': variant === 'warning',
-          'bg-rose-600 text-white': variant === 'danger',
-          'bg-blue-600 text-white': variant === 'info',
+          'border border-zinc-400/50 text-zinc-600 dark:text-zinc-400 bg-zinc-500/5': variant === 'default',
+          'border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5': variant === 'success',
+          'border border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/5': variant === 'warning',
+          'border border-rose-500/50 text-rose-600 dark:text-rose-400 bg-rose-500/5': variant === 'danger',
+          'border border-blue-500/50 text-blue-600 dark:text-blue-400 bg-blue-500/5': variant === 'info',
         },
         className
       )}

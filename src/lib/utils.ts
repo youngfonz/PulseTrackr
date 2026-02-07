@@ -43,21 +43,21 @@ export function isDueToday(date: Date | string | null): boolean {
   return d.toDateString() === today.toDateString()
 }
 
-// WCAG AA compliant colors - solid backgrounds with high contrast text
-// These use solid colors that work in both light and dark mode
+// Subtle, professional badge styles - outline-based design
+// Less visual noise while maintaining clarity
 export const statusColors: Record<string, string> = {
-  active: 'bg-emerald-600 text-white',
-  inactive: 'bg-zinc-500 text-white',
-  not_started: 'bg-slate-500 text-white',
-  in_progress: 'bg-blue-600 text-white',
-  on_hold: 'bg-amber-500 text-white',
-  completed: 'bg-emerald-600 text-white',
+  active: 'border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
+  inactive: 'border border-zinc-400/50 text-zinc-500 dark:text-zinc-400 bg-zinc-500/5',
+  not_started: 'border border-zinc-400/50 text-zinc-500 dark:text-zinc-400 bg-zinc-500/5',
+  in_progress: 'border border-blue-500/50 text-blue-600 dark:text-blue-400 bg-blue-500/5',
+  on_hold: 'border border-amber-500/50 text-amber-600 dark:text-amber-400 bg-amber-500/5',
+  completed: 'border border-emerald-500/50 text-emerald-600 dark:text-emerald-400 bg-emerald-500/5',
 }
 
 export const priorityColors: Record<string, string> = {
-  low: 'bg-slate-500 text-white',
-  medium: 'bg-blue-600 text-white',
-  high: 'bg-rose-600 text-white',
+  low: 'border border-zinc-400/50 text-zinc-500 dark:text-zinc-400 bg-zinc-500/5',
+  medium: 'border border-zinc-400/50 text-zinc-600 dark:text-zinc-300 bg-zinc-500/5',
+  high: 'border border-rose-500/50 text-rose-600 dark:text-rose-400 bg-rose-500/5',
 }
 
 export const statusLabels: Record<string, string> = {
