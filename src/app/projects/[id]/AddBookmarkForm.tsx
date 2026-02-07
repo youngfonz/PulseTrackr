@@ -24,8 +24,6 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
   const [error, setError] = useState<string | null>(null)
   const [tags, setTags] = useState<string[]>([])
   const [allTags, setAllTags] = useState<string[]>([])
-  const [priority, setPriority] = useState('medium')
-  const [dueDate, setDueDate] = useState('')
   const [notes, setNotes] = useState('')
   const [manualTitle, setManualTitle] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -127,8 +125,6 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
         thumbnailUrl: metadata.thumbnailUrl,
         bookmarkType: metadata.type,
         tags,
-        priority,
-        dueDate: dueDate || undefined,
         notes: notes || undefined,
       })
 
@@ -137,8 +133,6 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
       setMetadata(null)
       setManualTitle('')
       setTags([])
-      setPriority('medium')
-      setDueDate('')
       setNotes('')
       setIsOpen(false)
     } catch (err) {
@@ -259,39 +253,6 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
               suggestions={allTags}
               placeholder="Add tags..."
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="priority" className="block text-sm font-medium mb-1">
-                Priority
-              </label>
-              <select
-                id="priority"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value)}
-                className="w-full p-2 border rounded-md text-sm"
-                disabled={submitting}
-              >
-                <option value="low">Low</option>
-                <option value="medium">Medium</option>
-                <option value="high">High</option>
-              </select>
-            </div>
-
-            <div>
-              <label htmlFor="dueDate" className="block text-sm font-medium mb-1">
-                Due Date
-              </label>
-              <input
-                type="date"
-                id="dueDate"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="w-full p-2 border rounded-md text-sm"
-                disabled={submitting}
-              />
-            </div>
           </div>
 
           <div>
