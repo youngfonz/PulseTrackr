@@ -119,8 +119,8 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
   }
 
   return (
-    <div className="border-b bg-white dark:bg-gray-900 pb-6">
-      <div className="flex items-start justify-between mb-4">
+    <div className="pb-4">
+      <div className="flex items-start justify-between mb-2">
         <div className="flex-1">
           <Link
             href="/projects"
@@ -146,12 +146,12 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
                 }
               }}
               autoFocus
-              className="text-3xl font-bold border-b-2 border-blue-500 bg-transparent focus:outline-none w-full"
+              className="text-2xl font-bold border-b-2 border-primary bg-transparent focus:outline-none w-full"
             />
           ) : (
             <h1
               onClick={() => setIsEditingName(true)}
-              className="text-3xl font-bold cursor-pointer hover:text-blue-600 transition-colors"
+              className="text-2xl font-bold cursor-pointer hover:text-primary transition-colors"
             >
               {project.name}
             </h1>
@@ -164,76 +164,77 @@ export function ProjectHeader({ project, clients, completedTasks, totalTasks, to
               onBlur={handleDescriptionSave}
               rows={2}
               autoFocus
-              className="mt-2 w-full text-sm text-muted-foreground border rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="mt-1 w-full text-sm text-muted-foreground border border-border rounded p-2 bg-background focus:outline-none focus:ring-2 focus:ring-primary"
             />
           ) : (
             <p
               onClick={() => setIsEditingDescription(true)}
-              className="mt-2 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
+              className="mt-1 text-sm text-muted-foreground cursor-pointer hover:text-foreground transition-colors"
             >
               {project.description || 'Click to add description...'}
             </p>
           )}
 
-          <div className="flex items-center gap-4 mt-3">
+          <div className="flex items-center gap-3 mt-3 flex-wrap">
             <div className="flex items-center gap-2 text-sm">
               <span className="text-muted-foreground">Client:</span>
               <Link
                 href={`/clients/${project.client.id}`}
-                className="font-medium text-blue-600 hover:text-blue-700"
+                className="font-medium text-primary hover:underline"
               >
                 {project.client.name}
               </Link>
             </div>
-            <div className="flex items-center gap-2">
-              <select
-                value={project.status}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                className={`text-xs px-2 py-1 rounded font-medium cursor-pointer border-0 ${statusColors[project.status]}`}
-              >
-                {Object.entries(statusLabels).map(([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ))}
-              </select>
-            </div>
+            <select
+              value={project.status}
+              onChange={(e) => handleStatusChange(e.target.value)}
+              className={`text-xs px-2 py-1 rounded font-medium cursor-pointer border-0 ${statusColors[project.status]}`}
+            >
+              {Object.entries(statusLabels).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
             <div className={`text-xs px-2 py-1 rounded font-medium ${priorityColors[project.priority]}`}>
               {project.priority.charAt(0).toUpperCase() + project.priority.slice(1)} Priority
             </div>
+
+            {/* Discreet delete option */}
+            <button
+              onClick={handleDelete}
+              disabled={isPending}
+              className="text-xs text-muted-foreground hover:text-destructive transition-colors ml-auto"
+            >
+              Delete
+            </button>
           </div>
         </div>
-
-        <button
-          onClick={handleDelete}
-          disabled={isPending}
-          className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 text-sm font-medium"
-        >
-          Delete Project
-        </button>
       </div>
 
-      {/* Quick Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <div className="text-2xl font-bold">{totalTasks}</div>
-          <div className="text-xs text-muted-foreground mt-1">Total Tasks</div>
+      {/* Compact Stats Bar */}
+      <div className="flex items-center gap-6 mt-4 py-3 border-t border-b border-border text-sm">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{totalTasks}</span>
+          <span className="text-muted-foreground">tasks</span>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <div className="text-2xl font-bold">{progress}%</div>
-          <div className="text-xs text-muted-foreground mt-1">Complete</div>
-          <div className="mt-2 h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-            <div className="h-full bg-blue-600 transition-all" style={{ width: `${progress}%` }} />
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{progress}%</span>
+          <span className="text-muted-foreground">complete</span>
+          <div className="w-16 h-1.5 bg-secondary rounded-full overflow-hidden">
+            <div className="h-full bg-primary transition-all" style={{ width: `${progress}%` }} />
           </div>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <div className="text-2xl font-bold">{totalHours.toFixed(1)}h</div>
-          <div className="text-xs text-muted-foreground mt-1">Hours Tracked</div>
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">{totalHours.toFixed(1)}h</span>
+          <span className="text-muted-foreground">tracked</span>
         </div>
-        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-          <div className="text-2xl font-bold">
-            {project.dueDate ? new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—'}
+        {project.dueDate && (
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">Due</span>
+            <span className="font-semibold">
+              {new Date(project.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Due Date</div>
-        </div>
+        )}
       </div>
     </div>
   )
