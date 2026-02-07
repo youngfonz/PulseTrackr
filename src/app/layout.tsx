@@ -28,24 +28,19 @@ export default async function RootLayout({
 }>) {
   const clientCount = await getClientCount();
 
-  const content = (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider>
-          <LayoutWrapper clientCount={clientCount}>
-            {children}
-          </LayoutWrapper>
-        </ThemeProvider>
-      </body>
-    </html>
+  return (
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+          <ThemeProvider>
+            <LayoutWrapper clientCount={clientCount}>
+              {children}
+            </LayoutWrapper>
+          </ThemeProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   );
-
-  // Only wrap with ClerkProvider if keys are configured
-  if (process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY) {
-    return <ClerkProvider>{content}</ClerkProvider>;
-  }
-
-  return content;
 }
