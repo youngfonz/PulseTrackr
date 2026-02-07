@@ -46,7 +46,7 @@ export function AddTaskForm({ projectId, onSuccess }: { projectId: string; onSuc
 
   if (!isOpen) {
     return (
-      <Button onClick={() => setIsOpen(true)} variant="secondary" className="w-full">
+      <Button onClick={() => setIsOpen(true)} className="w-full">
         + Add Task
       </Button>
     )
