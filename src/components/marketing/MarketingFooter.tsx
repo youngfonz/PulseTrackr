@@ -1,0 +1,71 @@
+import Link from 'next/link'
+import { PulseLogo } from '@/components/PulseLogo'
+
+export function MarketingFooter() {
+  const footerSections = [
+    {
+      title: 'Product',
+      links: [
+        { label: 'Features', href: '#features' },
+        { label: 'Pricing', href: '#pricing' },
+      ],
+    },
+    {
+      title: 'Company',
+      links: [
+        { label: 'About', href: '#' },
+        { label: 'Blog', href: '#' },
+      ],
+    },
+    {
+      title: 'Legal',
+      links: [
+        { label: 'Privacy', href: '#' },
+        { label: 'Terms', href: '#' },
+      ],
+    },
+  ]
+
+  return (
+    <footer className="bg-muted">
+      <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+          {footerSections.map((section) => (
+            <div key={section.title}>
+              <h3 className="text-sm font-semibold text-foreground mb-4">
+                {section.title}
+              </h3>
+              <ul className="space-y-3">
+                {section.links.map((link) => (
+                  <li key={link.label}>
+                    <a
+                      href={link.href}
+                      className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        {/* Separator */}
+        <div className="border-t border-border mb-8" />
+
+        {/* Bottom Row */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
+            <PulseLogo size={28} />
+            <span className="text-lg font-bold text-foreground">Pulse</span>
+          </Link>
+          <p className="text-sm text-muted-foreground">
+            © 2025 Pulse. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
+}

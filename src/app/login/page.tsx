@@ -32,7 +32,7 @@ export default function LoginPage() {
     // TODO: Add actual authentication logic
     setTimeout(() => {
       localStorage.setItem('user', JSON.stringify({ email: formData.email }))
-      router.push('/')
+      router.push('/dashboard')
     }, 1000)
   }
 
