@@ -14,7 +14,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const pathname = usePathname()
 
   const publicPaths = ['/sign-in', '/sign-up']
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path))
+  const isPublicPath = pathname === '/' || publicPaths.some(path => pathname.startsWith(path))
 
   useEffect(() => {
     if (isLoaded && !isSignedIn && !isPublicPath) {

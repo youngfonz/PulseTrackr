@@ -43,7 +43,7 @@ export default function SignupPage() {
     // TODO: Add actual authentication logic
     setTimeout(() => {
       localStorage.setItem('user', JSON.stringify({ name: formData.name, email: formData.email }))
-      router.push('/')
+      router.push('/dashboard')
     }, 1000)
   }
 

@@ -7,7 +7,7 @@ export default function SettingsPage() {
     <div className="space-y-4 md:space-y-6 max-w-2xl">
       <div>
         <Link
-          href="/"
+          href="/dashboard"
           className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
