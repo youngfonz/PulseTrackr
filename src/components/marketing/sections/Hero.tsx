@@ -29,23 +29,57 @@ function LogoMarks() {
 export function Hero() {
   return (
     <section className="relative min-h-[calc(100vh-64px)] flex items-center overflow-hidden">
-      {/* Abstract geometric background decoration */}
+      {/* Network constellation background */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <svg className="absolute top-20 right-0 w-[500px] h-[500px] text-primary/[0.04]" viewBox="0 0 400 400">
-          {Array.from({ length: 8 }).map((_, row) =>
-            Array.from({ length: 8 }).map((_, col) => (
-              <g key={`${row}-${col}`} transform={`translate(${col * 50 + 25}, ${row * 50 + 25})`}>
-                <line x1="-4" y1="0" x2="4" y2="0" stroke="currentColor" strokeWidth="1.5" />
-                <line x1="0" y1="-4" x2="0" y2="4" stroke="currentColor" strokeWidth="1.5" />
-              </g>
-            ))
-          )}
-        </svg>
-
-        <svg className="absolute -bottom-10 -left-10 w-[300px] h-[300px] text-primary/[0.06]" viewBox="0 0 300 300">
-          <line x1="0" y1="300" x2="300" y2="0" stroke="currentColor" strokeWidth="1" />
-          <line x1="40" y1="300" x2="340" y2="0" stroke="currentColor" strokeWidth="1" />
-          <line x1="80" y1="300" x2="380" y2="0" stroke="currentColor" strokeWidth="1" />
+        <svg className="absolute inset-0 w-full h-full" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+          {/* Connection lines */}
+          <g stroke="currentColor" className="text-primary/[0.07]" strokeWidth="1" fill="none">
+            <line x1="850" y1="80" x2="1050" y2="200" />
+            <line x1="1050" y1="200" x2="950" y2="350" />
+            <line x1="950" y1="350" x2="1100" y2="450" />
+            <line x1="1100" y1="450" x2="1000" y2="600" />
+            <line x1="850" y1="80" x2="700" y2="180" />
+            <line x1="700" y1="180" x2="950" y2="350" />
+            <line x1="700" y1="180" x2="600" y2="350" />
+            <line x1="600" y1="350" x2="750" y2="500" />
+            <line x1="750" y1="500" x2="1000" y2="600" />
+            <line x1="1050" y1="200" x2="1150" y2="100" />
+            <line x1="1100" y1="450" x2="1180" y2="350" />
+            <line x1="600" y1="350" x2="500" y2="250" />
+            <line x1="750" y1="500" x2="650" y2="650" />
+            <line x1="1000" y1="600" x2="900" y2="720" />
+            <line x1="500" y1="250" x2="400" y2="150" />
+            <line x1="400" y1="150" x2="300" y2="250" />
+            <line x1="300" y1="250" x2="200" y2="180" />
+            <line x1="650" y1="650" x2="500" y2="700" />
+          </g>
+          {/* Nodes — larger ones at intersections */}
+          <g className="text-primary/[0.12]" fill="currentColor">
+            <circle cx="850" cy="80" r="4" />
+            <circle cx="1050" cy="200" r="5" />
+            <circle cx="950" cy="350" r="6" />
+            <circle cx="1100" cy="450" r="4" />
+            <circle cx="1000" cy="600" r="5" />
+            <circle cx="700" cy="180" r="4" />
+            <circle cx="600" cy="350" r="5" />
+            <circle cx="750" cy="500" r="4" />
+            <circle cx="1150" cy="100" r="3" />
+            <circle cx="1180" cy="350" r="3" />
+            <circle cx="500" cy="250" r="4" />
+            <circle cx="650" cy="650" r="3" />
+            <circle cx="900" cy="720" r="3" />
+            <circle cx="400" cy="150" r="3" />
+            <circle cx="300" cy="250" r="3" />
+            <circle cx="200" cy="180" r="2" />
+            <circle cx="500" cy="700" r="2" />
+          </g>
+          {/* Accent rings on key nodes */}
+          <g className="text-primary/[0.06]" fill="none" stroke="currentColor" strokeWidth="1">
+            <circle cx="950" cy="350" r="16" />
+            <circle cx="1050" cy="200" r="12" />
+            <circle cx="600" cy="350" r="12" />
+            <circle cx="1000" cy="600" r="14" />
+          </g>
         </svg>
       </div>
 
