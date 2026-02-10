@@ -8,24 +8,21 @@ const testimonials = [
     name: "Sarah Kim",
     role: "Freelance Designer",
     initials: "SK",
-    accentFrom: 'from-primary',
-    accentTo: 'to-violet-500',
+    accent: 'bg-primary',
   },
   {
     quote: "The task management is exactly what I needed. Simple, fast, and doesn't get in the way of actual work.",
     name: "Marcus Chen",
     role: "Web Developer",
     initials: "MC",
-    accentFrom: 'from-amber-500',
-    accentTo: 'to-orange-500',
+    accent: 'bg-amber-500',
   },
   {
     quote: "I finally have a clear picture of all my projects and deadlines. Game changer for staying organized.",
     name: "Ava Rodriguez",
     role: "Content Creator",
     initials: "AR",
-    accentFrom: 'from-emerald-500',
-    accentTo: 'to-teal-500',
+    accent: 'bg-emerald-500',
   }
 ]
 
@@ -61,8 +58,8 @@ export function Testimonials() {
           {testimonials.map((testimonial, index) => (
             <ScrollReveal key={index} delay={index * 150}>
               <div className={`relative bg-white/[0.05] backdrop-blur-sm border border-white/[0.08] rounded-xl p-6 hover:bg-white/[0.08] transition-all duration-300 ${index === 1 ? 'md:-translate-y-2' : ''}`}>
-                {/* Accent gradient line at top */}
-                <div className={`absolute top-0 left-6 right-6 h-px bg-gradient-to-r ${testimonial.accentFrom} ${testimonial.accentTo}`} />
+                {/* Solid accent line at top */}
+                <div className={`absolute top-0 left-6 right-6 h-px ${testimonial.accent}`} />
 
                 <div className="flex gap-0.5 mt-2">
                   {[...Array(5)].map((_, i) => (
@@ -82,7 +79,7 @@ export function Testimonials() {
                 </p>
 
                 <div className="flex items-center gap-3 mt-6 pt-4 border-t border-white/[0.06]">
-                  <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${testimonial.accentFrom} ${testimonial.accentTo} flex items-center justify-center text-sm font-semibold text-white`}>
+                  <div className={`w-10 h-10 rounded-full ${testimonial.accent} flex items-center justify-center text-sm font-semibold text-white`}>
                     {testimonial.initials}
                   </div>
                   <div>

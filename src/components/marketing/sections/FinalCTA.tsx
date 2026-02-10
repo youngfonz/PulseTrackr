@@ -5,7 +5,7 @@ import { ScrollReveal } from '@/components/marketing/ScrollReveal'
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-violet-600 py-20 md:py-28">
+    <section className="relative overflow-hidden bg-primary py-20 md:py-28">
       {/* Geometric pattern overlay */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
         <svg className="absolute top-0 right-0 w-[600px] h-[600px] opacity-[0.07]" viewBox="0 0 400 400">

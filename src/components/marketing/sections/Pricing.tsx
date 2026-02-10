@@ -53,10 +53,10 @@ export function Pricing() {
                   ? 'shadow-xl shadow-primary/10'
                   : ''
               }`}>
-                {/* Gradient header for Pro */}
+                {/* Solid header for Pro */}
                 {plan.highlighted && (
-                  <div className="bg-gradient-to-r from-primary to-violet-500 px-8 py-3 text-center">
-                    <span className="text-sm font-semibold text-white">Most Popular</span>
+                  <div className="bg-primary px-8 py-3 text-center">
+                    <span className="text-sm font-semibold text-primary-foreground">Most Popular</span>
                   </div>
                 )}
 
