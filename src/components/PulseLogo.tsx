@@ -9,7 +9,7 @@ export function PulseLogo({ size = 28, className }: PulseLogoProps) {
   return (
     <div
       className={cn(
-        'bg-gradient-to-br from-primary to-accent flex items-center justify-center',
+        'bg-primary flex items-center justify-center rounded-lg',
         className
       )}
       style={{ width: size, height: size }}
