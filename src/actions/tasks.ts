@@ -1,11 +1,14 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { requireUserId } from '@/lib/auth'
+import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getTask(id: string) {
-  return prisma.task.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  return prisma.task.findFirst({
+    where: { id, userId },
     include: {
       images: true,
       files: true,
@@ -23,7 +26,15 @@ export async function getTask(id: string) {
 }
 
 export async function createTask(projectId: string, formData: FormData) {
+  const userId = await requireUserId()
+
+  const limit = await checkLimit('tasks')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+  }
+
   const data = {
+    userId,
     title: formData.get('title') as string,
     description: formData.get('description') as string || null,
     notes: formData.get('notes') as string || null,
@@ -42,8 +53,9 @@ export async function createTask(projectId: string, formData: FormData) {
 }
 
 export async function updateTask(id: string, formData: FormData) {
-  const task = await prisma.task.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id, userId },
     select: { projectId: true },
   })
 
@@ -70,8 +82,9 @@ export async function updateTask(id: string, formData: FormData) {
 }
 
 export async function toggleTask(id: string) {
-  const task = await prisma.task.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id, userId },
     select: { completed: true, projectId: true },
   })
 
@@ -86,8 +99,9 @@ export async function toggleTask(id: string) {
 }
 
 export async function deleteTask(id: string) {
-  const task = await prisma.task.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id, userId },
     select: { projectId: true },
   })
 
@@ -100,8 +114,9 @@ export async function deleteTask(id: string) {
 }
 
 export async function addTaskImage(taskId: string, path: string, name: string) {
-  const task = await prisma.task.findUnique({
-    where: { id: taskId },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id: taskId, userId },
     select: { projectId: true },
   })
 
@@ -118,16 +133,17 @@ export async function addTaskImage(taskId: string, path: string, name: string) {
 }
 
 export async function removeTaskImage(imageId: string) {
+  const userId = await requireUserId()
   const image = await prisma.taskImage.findUnique({
     where: { id: imageId },
     include: {
       task: {
-        select: { projectId: true },
+        select: { projectId: true, userId: true },
       },
     },
   })
 
-  if (!image) return
+  if (!image || image.task.userId !== userId) return
 
   await prisma.taskImage.delete({
     where: { id: imageId },
@@ -142,8 +158,9 @@ export async function addTaskFile(
   type: string,
   size: number
 ) {
-  const task = await prisma.task.findUnique({
-    where: { id: taskId },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id: taskId, userId },
     select: { projectId: true },
   })
 
@@ -162,16 +179,17 @@ export async function addTaskFile(
 }
 
 export async function removeTaskFile(fileId: string) {
+  const userId = await requireUserId()
   const file = await prisma.taskFile.findUnique({
     where: { id: fileId },
     include: {
       task: {
-        select: { projectId: true },
+        select: { projectId: true, userId: true },
       },
     },
   })
 
-  if (!file) return
+  if (!file || file.task.userId !== userId) return
 
   await prisma.taskFile.delete({
     where: { id: fileId },
@@ -180,6 +198,7 @@ export async function removeTaskFile(fileId: string) {
 }
 
 export async function getTasksDueToday() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const tomorrow = new Date(today)
@@ -187,6 +206,7 @@ export async function getTasksDueToday() {
 
   return prisma.task.findMany({
     where: {
+      userId,
       completed: false,
       dueDate: {
         gte: today,
@@ -206,11 +226,13 @@ export async function getTasksDueToday() {
 }
 
 export async function getOverdueTasks() {
+  const userId = await requireUserId()
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
   return prisma.task.findMany({
     where: {
+      userId,
       completed: false,
       dueDate: {
         lt: today,
@@ -229,7 +251,9 @@ export async function getOverdueTasks() {
 }
 
 export async function getAllTasksForGantt() {
+  const userId = await requireUserId()
   return prisma.task.findMany({
+    where: { userId },
     include: {
       project: {
         select: {
@@ -253,11 +277,13 @@ export async function getAllTasksForGantt() {
 }
 
 export async function getTasksForCalendar(year: number, month: number) {
+  const userId = await requireUserId()
   const startOfMonth = new Date(year, month, 1)
   const endOfMonth = new Date(year, month + 1, 0, 23, 59, 59)
 
   return prisma.task.findMany({
     where: {
+      userId,
       OR: [
         {
           dueDate: {
@@ -297,7 +323,8 @@ export async function getAllTasks(options?: {
   projectId?: string
   sort?: string
 }) {
-  const where: Record<string, unknown> = {}
+  const userId = await requireUserId()
+  const where: Record<string, unknown> = { userId }
 
   if (options?.date) {
     const targetDate = new Date(options.date)
@@ -408,7 +435,9 @@ export async function getAllTasks(options?: {
 }
 
 export async function getProjectsForTaskFilter() {
+  const userId = await requireUserId()
   return prisma.project.findMany({
+    where: { userId },
     select: {
       id: true,
       name: true,
@@ -423,8 +452,9 @@ export async function getProjectsForTaskFilter() {
 }
 
 export async function addTaskComment(taskId: string, content: string) {
-  const task = await prisma.task.findUnique({
-    where: { id: taskId },
+  const userId = await requireUserId()
+  const task = await prisma.task.findFirst({
+    where: { id: taskId, userId },
     select: { projectId: true },
   })
 
@@ -440,16 +470,17 @@ export async function addTaskComment(taskId: string, content: string) {
 }
 
 export async function deleteTaskComment(commentId: string) {
+  const userId = await requireUserId()
   const comment = await prisma.taskComment.findUnique({
     where: { id: commentId },
     include: {
       task: {
-        select: { projectId: true },
+        select: { projectId: true, userId: true },
       },
     },
   })
 
-  if (!comment) return
+  if (!comment || comment.task.userId !== userId) return
 
   await prisma.taskComment.delete({
     where: { id: commentId },
@@ -471,7 +502,15 @@ export async function createBookmarkTask(
     notes?: string
   }
 ) {
+  const userId = await requireUserId()
+
+  const limit = await checkLimit('tasks')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} tasks. Upgrade to Pro for unlimited tasks.`)
+  }
+
   const taskData = {
+    userId,
     title: data.title,
     description: data.description || null,
     notes: data.notes || null,
@@ -494,7 +533,9 @@ export async function getAllBookmarks(filters?: {
   bookmarkType?: string
   sort?: string
 }) {
+  const userId = await requireUserId()
   const where: Record<string, unknown> = {
+    userId,
     url: { not: null }
   }
 
@@ -552,8 +593,10 @@ export async function getAllBookmarks(filters?: {
 }
 
 export async function getAllTags() {
+  const userId = await requireUserId()
   const tasks = await prisma.task.findMany({
     where: {
+      userId,
       tags: {
         isEmpty: false,
       },

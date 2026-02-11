@@ -1,6 +1,8 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { requireUserId } from '@/lib/auth'
+import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getProjects(filters?: {
@@ -10,7 +12,8 @@ export async function getProjects(filters?: {
   clientId?: string
   sort?: string
 }) {
-  const where: Record<string, unknown> = {}
+  const userId = await requireUserId()
+  const where: Record<string, unknown> = { userId }
 
   if (filters?.search) {
     where.OR = [
@@ -116,8 +119,9 @@ export async function getProjects(filters?: {
 }
 
 export async function getProject(id: string) {
-  return prisma.project.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  return prisma.project.findFirst({
+    where: { id, userId },
     include: {
       client: {
         select: {
@@ -148,7 +152,9 @@ export async function getProject(id: string) {
 }
 
 export async function getProjectsForGantt() {
+  const userId = await requireUserId()
   return prisma.project.findMany({
+    where: { userId },
     include: {
       client: {
         select: {
@@ -168,7 +174,15 @@ export async function getProjectsForGantt() {
 }
 
 export async function createProject(formData: FormData) {
+  const userId = await requireUserId()
+
+  const limit = await checkLimit('projects')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} projects. Upgrade to Pro for unlimited projects.`)
+  }
+
   const data = {
+    userId,
     name: formData.get('name') as string,
     description: formData.get('description') as string || null,
     notes: formData.get('notes') as string || null,
@@ -190,6 +204,10 @@ export async function createProject(formData: FormData) {
 }
 
 export async function updateProject(id: string, formData: FormData) {
+  const userId = await requireUserId()
+  const existing = await prisma.project.findFirst({ where: { id, userId } })
+  if (!existing) return
+
   const data = {
     name: formData.get('name') as string,
     description: formData.get('description') as string || null,
@@ -215,7 +233,11 @@ export async function updateProject(id: string, formData: FormData) {
 }
 
 export async function deleteProject(id: string) {
-  const project = await prisma.project.delete({
+  const userId = await requireUserId()
+  const project = await prisma.project.findFirst({ where: { id, userId } })
+  if (!project) return
+
+  await prisma.project.delete({
     where: { id },
   })
   revalidatePath('/projects')
@@ -223,8 +245,9 @@ export async function deleteProject(id: string) {
 }
 
 export async function getClientsForSelect() {
+  const userId = await requireUserId()
   return prisma.client.findMany({
-    where: { status: 'active' },
+    where: { userId, status: 'active' },
     select: {
       id: true,
       name: true,
@@ -234,6 +257,10 @@ export async function getClientsForSelect() {
 }
 
 export async function addProjectImage(projectId: string, path: string, name: string) {
+  const userId = await requireUserId()
+  const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+  if (!project) return
+
   await prisma.projectImage.create({
     data: {
       path,
@@ -245,21 +272,26 @@ export async function addProjectImage(projectId: string, path: string, name: str
 }
 
 export async function removeProjectImage(imageId: string) {
+  const userId = await requireUserId()
   const image = await prisma.projectImage.findUnique({
     where: { id: imageId },
-    select: { projectId: true },
+    include: { project: { select: { id: true, userId: true } } },
   })
 
-  if (!image) return
+  if (!image || image.project.userId !== userId) return
 
   await prisma.projectImage.delete({
     where: { id: imageId },
   })
-  revalidatePath(`/projects/${image.projectId}`)
+  revalidatePath(`/projects/${image.project.id}`)
 }
 
 // Time Entry Actions
 export async function addTimeEntry(projectId: string, formData: FormData) {
+  const userId = await requireUserId()
+  const project = await prisma.project.findFirst({ where: { id: projectId, userId } })
+  if (!project) return
+
   const hours = parseFloat(formData.get('hours') as string)
   const description = formData.get('description') as string || null
   const dateStr = formData.get('date') as string
@@ -276,15 +308,16 @@ export async function addTimeEntry(projectId: string, formData: FormData) {
 }
 
 export async function deleteTimeEntry(id: string) {
+  const userId = await requireUserId()
   const entry = await prisma.timeEntry.findUnique({
     where: { id },
-    select: { projectId: true },
+    include: { project: { select: { id: true, userId: true } } },
   })
 
-  if (!entry) return
+  if (!entry || entry.project.userId !== userId) return
 
   await prisma.timeEntry.delete({
     where: { id },
   })
-  revalidatePath(`/projects/${entry.projectId}`)
+  revalidatePath(`/projects/${entry.project.id}`)
 }

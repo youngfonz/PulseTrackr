@@ -1,10 +1,13 @@
 'use server'
 
 import { prisma } from '@/lib/prisma'
+import { requireUserId } from '@/lib/auth'
+import { checkLimit } from '@/lib/subscription'
 import { revalidatePath } from 'next/cache'
 
 export async function getClients(search?: string, status?: string, sort?: string) {
-  const where: Record<string, unknown> = {}
+  const userId = await requireUserId()
+  const where: Record<string, unknown> = { userId }
 
   if (search) {
     where.OR = [
@@ -78,8 +81,9 @@ export async function getClients(search?: string, status?: string, sort?: string
 }
 
 export async function getClient(id: string) {
-  return prisma.client.findUnique({
-    where: { id },
+  const userId = await requireUserId()
+  return prisma.client.findFirst({
+    where: { id, userId },
     include: {
       projects: {
         include: {
@@ -94,7 +98,15 @@ export async function getClient(id: string) {
 }
 
 export async function createClient(formData: FormData) {
+  const userId = await requireUserId()
+
+  const limit = await checkLimit('clients')
+  if (!limit.allowed) {
+    throw new Error(`Free plan limit: ${limit.limit} client${limit.limit === 1 ? '' : 's'}. Upgrade to Pro for unlimited clients.`)
+  }
+
   const data = {
+    userId,
     name: formData.get('name') as string,
     email: formData.get('email') as string || null,
     phone: formData.get('phone') as string || null,
@@ -109,6 +121,10 @@ export async function createClient(formData: FormData) {
 }
 
 export async function updateClient(id: string, formData: FormData) {
+  const userId = await requireUserId()
+  const existing = await prisma.client.findFirst({ where: { id, userId } })
+  if (!existing) return
+
   const data = {
     name: formData.get('name') as string,
     email: formData.get('email') as string || null,
@@ -128,6 +144,10 @@ export async function updateClient(id: string, formData: FormData) {
 }
 
 export async function deleteClient(id: string) {
+  const userId = await requireUserId()
+  const existing = await prisma.client.findFirst({ where: { id, userId } })
+  if (!existing) return
+
   await prisma.client.delete({
     where: { id },
   })
