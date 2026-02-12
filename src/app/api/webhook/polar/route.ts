@@ -1,91 +1,101 @@
-import { Webhooks } from '@polar-sh/nextjs'
+import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-export const POST = Webhooks({
-  webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
+export async function POST(req: NextRequest) {
+  if (!process.env.POLAR_WEBHOOK_SECRET) {
+    return NextResponse.json({ error: 'Webhooks not configured' }, { status: 503 })
+  }
 
-  onSubscriptionActive: async (payload) => {
-    const { customerId, id: subscriptionId } = payload.data
-    const userId = payload.data.metadata?.userId as string | undefined
+  const { Webhooks } = await import('@polar-sh/nextjs')
 
-    if (!userId) {
-      console.error('Polar webhook: missing userId in subscription metadata')
-      return
-    }
+  const handler = Webhooks({
+    webhookSecret: process.env.POLAR_WEBHOOK_SECRET,
 
-    await prisma.subscription.upsert({
-      where: { userId },
-      create: {
-        userId,
-        polarCustomerId: customerId,
-        polarSubscriptionId: subscriptionId,
-        plan: 'pro',
-        status: 'active',
-        currentPeriodEnd: payload.data.currentPeriodEnd
-          ? new Date(payload.data.currentPeriodEnd)
-          : null,
-      },
-      update: {
-        polarCustomerId: customerId,
-        polarSubscriptionId: subscriptionId,
-        plan: 'pro',
-        status: 'active',
-        currentPeriodEnd: payload.data.currentPeriodEnd
-          ? new Date(payload.data.currentPeriodEnd)
-          : null,
-        cancelAtPeriodEnd: false,
-      },
-    })
-  },
+    onSubscriptionActive: async (payload) => {
+      const { customerId, id: subscriptionId } = payload.data
+      const userId = payload.data.metadata?.userId as string | undefined
 
-  onSubscriptionCanceled: async (payload) => {
-    const userId = payload.data.metadata?.userId as string | undefined
-    if (!userId) return
+      if (!userId) {
+        console.error('Polar webhook: missing userId in subscription metadata')
+        return
+      }
 
-    await prisma.subscription.update({
-      where: { userId },
-      data: {
-        cancelAtPeriodEnd: true,
-      },
-    })
-  },
+      await prisma.subscription.upsert({
+        where: { userId },
+        create: {
+          userId,
+          polarCustomerId: customerId,
+          polarSubscriptionId: subscriptionId,
+          plan: 'pro',
+          status: 'active',
+          currentPeriodEnd: payload.data.currentPeriodEnd
+            ? new Date(payload.data.currentPeriodEnd)
+            : null,
+        },
+        update: {
+          polarCustomerId: customerId,
+          polarSubscriptionId: subscriptionId,
+          plan: 'pro',
+          status: 'active',
+          currentPeriodEnd: payload.data.currentPeriodEnd
+            ? new Date(payload.data.currentPeriodEnd)
+            : null,
+          cancelAtPeriodEnd: false,
+        },
+      })
+    },
 
-  onSubscriptionRevoked: async (payload) => {
-    const userId = payload.data.metadata?.userId as string | undefined
-    if (!userId) return
+    onSubscriptionCanceled: async (payload) => {
+      const userId = payload.data.metadata?.userId as string | undefined
+      if (!userId) return
 
-    await prisma.subscription.update({
-      where: { userId },
-      data: {
-        plan: 'free',
-        status: 'canceled',
-        cancelAtPeriodEnd: false,
-      },
-    })
-  },
+      await prisma.subscription.update({
+        where: { userId },
+        data: {
+          cancelAtPeriodEnd: true,
+        },
+      })
+    },
 
-  onSubscriptionUpdated: async (payload) => {
-    const userId = payload.data.metadata?.userId as string | undefined
-    if (!userId) return
+    onSubscriptionRevoked: async (payload) => {
+      const userId = payload.data.metadata?.userId as string | undefined
+      if (!userId) return
 
-    await prisma.subscription.upsert({
-      where: { userId },
-      create: {
-        userId,
-        polarCustomerId: payload.data.customerId,
-        polarSubscriptionId: payload.data.id,
-        plan: 'pro',
-        status: payload.data.status,
-        currentPeriodEnd: payload.data.currentPeriodEnd
-          ? new Date(payload.data.currentPeriodEnd)
-          : null,
-      },
-      update: {
-        status: payload.data.status,
-        currentPeriodEnd: payload.data.currentPeriodEnd
-          ? new Date(payload.data.currentPeriodEnd)
-          : null,
-      },
-    })
-  },
-})
+      await prisma.subscription.update({
+        where: { userId },
+        data: {
+          plan: 'free',
+          status: 'canceled',
+          cancelAtPeriodEnd: false,
+        },
+      })
+    },
+
+    onSubscriptionUpdated: async (payload) => {
+      const userId = payload.data.metadata?.userId as string | undefined
+      if (!userId) return
+
+      await prisma.subscription.upsert({
+        where: { userId },
+        create: {
+          userId,
+          polarCustomerId: payload.data.customerId,
+          polarSubscriptionId: payload.data.id,
+          plan: 'pro',
+          status: payload.data.status,
+          currentPeriodEnd: payload.data.currentPeriodEnd
+            ? new Date(payload.data.currentPeriodEnd)
+            : null,
+        },
+        update: {
+          status: payload.data.status,
+          currentPeriodEnd: payload.data.currentPeriodEnd
+            ? new Date(payload.data.currentPeriodEnd)
+            : null,
+        },
+      })
+    },
+  })
+
+  return handler(req)
+}
