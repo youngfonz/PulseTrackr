@@ -47,14 +47,14 @@ export function TimeTracker({ projectId, timeEntries }: TimeTrackerProps) {
 
   return (
     <div className="space-y-4">
-      {/* Summary */}
-      <div className="flex items-center justify-between">
+      {/* Summary + Add button */}
+      <div className="flex items-center gap-4">
         <div>
           <p className="text-2xl font-bold text-foreground">{formatHours(totalHours)}</p>
           <p className="text-sm text-muted-foreground">Total hours logged</p>
         </div>
         {!isAdding && (
-          <Button onClick={() => setIsAdding(true)} size="sm">
+          <Button onClick={() => setIsAdding(true)}>
             + Log Time
           </Button>
         )}

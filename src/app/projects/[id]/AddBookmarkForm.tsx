@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { createBookmarkTask, getAllTags } from '@/actions/tasks'
+import { Button } from '@/components/ui/Button'
 import { TagInput } from '@/components/ui/TagInput'
 import { Loader2, ExternalLink, Youtube, Twitter, Globe } from 'lucide-react'
 
@@ -134,12 +135,9 @@ export function AddBookmarkForm({ projectId }: AddBookmarkFormProps) {
 
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium"
-      >
+      <Button onClick={() => setIsOpen(true)}>
         + Add Bookmark
-      </button>
+      </Button>
     )
   }
 
