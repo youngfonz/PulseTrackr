@@ -107,7 +107,7 @@ export default async function TasksPage({ searchParams }: Props) {
                         <div className="flex items-start justify-between gap-2">
                           <div className="min-w-0 flex-1">
                             <Link
-                              href={`/projects/${task.project.id}`}
+                              href={`/tasks/${task.id}`}
                               className={`font-medium block truncate hover:text-link ${
                                 task.completed
                                   ? 'text-muted-foreground line-through'

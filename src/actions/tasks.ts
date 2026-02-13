@@ -79,6 +79,8 @@ export async function updateTask(id: string, formData: FormData) {
     data,
   })
   revalidatePath(`/projects/${task.projectId}`)
+  revalidatePath(`/tasks/${id}`)
+  revalidatePath('/tasks')
 }
 
 export async function toggleTask(id: string) {
@@ -95,6 +97,7 @@ export async function toggleTask(id: string) {
     data: { completed: !task.completed },
   })
   revalidatePath(`/projects/${task.projectId}`)
+  revalidatePath(`/tasks/${id}`)
   revalidatePath('/tasks')
 }
 
@@ -111,6 +114,7 @@ export async function deleteTask(id: string) {
     where: { id },
   })
   revalidatePath(`/projects/${task.projectId}`)
+  revalidatePath('/tasks')
 }
 
 export async function addTaskImage(taskId: string, path: string, name: string) {
