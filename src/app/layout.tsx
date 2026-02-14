@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://project-tracker-rose-five.vercel.app"),
+  metadataBase: new URL("https://pulsepro.work"),
   title: "Pulse — Project & Task Management",
   description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse.",
   openGraph: {
