@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createBookmarkTask, getAllTags } from '@/actions/tasks'
 import { Modal } from '@/components/ui/Modal'
 import { Select } from '@/components/ui/Select'
 import { TagInput } from '@/components/ui/TagInput'
-import { Loader2, ExternalLink, Youtube, Twitter, Globe } from 'lucide-react'
+import { Loader2, ExternalLink, Youtube, Twitter, Globe, ImagePlus, X } from 'lucide-react'
 
 interface Project {
   id: string
@@ -32,6 +32,9 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
   const [notes, setNotes] = useState('')
   const [manualTitle, setManualTitle] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (isOpen) {
@@ -104,7 +107,7 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
         url,
         title: manualTitle,
         description: metadata.description,
-        thumbnailUrl: metadata.thumbnailUrl,
+        thumbnailUrl: uploadedImageUrl || metadata.thumbnailUrl,
         bookmarkType: metadata.type,
         tags,
         notes: notes || undefined,
@@ -117,6 +120,46 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
     }
   }
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select an image file (JPEG, PNG, GIF, or WebP)')
+      return
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Image must be less than 2MB')
+      return
+    }
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('type', 'tasks')
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await response.json()
+
+      if (response.ok) {
+        setUploadedImageUrl(data.path)
+      } else {
+        setError(data.error || 'Failed to upload image')
+      }
+    } catch {
+      setError('Failed to upload image. Please try again.')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
   const handleClose = () => {
     setIsOpen(false)
     setProjectId('')
@@ -126,6 +169,8 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
     setTags([])
     setNotes('')
     setError(null)
+    setUploadedImageUrl(null)
+    setUploading(false)
   }
 
   return (
@@ -184,8 +229,45 @@ export function AddBookmarkButton({ projects }: { projects: Project[] }) {
             <>
               <div className="p-3 border border-border rounded-md bg-secondary/30">
                 <div className="flex items-start gap-3">
-                  {metadata.thumbnailUrl && (
-                    <img src={metadata.thumbnailUrl} alt="" className="w-20 h-20 object-cover rounded" />
+                  {(uploadedImageUrl || metadata.thumbnailUrl) ? (
+                    <div className="relative flex-shrink-0">
+                      <img src={uploadedImageUrl || metadata.thumbnailUrl!} alt="" className="w-20 h-20 object-cover rounded" />
+                      {uploadedImageUrl && (
+                        <button
+                          type="button"
+                          onClick={() => setUploadedImageUrl(null)}
+                          className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive text-white rounded-full flex items-center justify-center hover:bg-destructive/80"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex-shrink-0">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        disabled={uploading || submitting}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading || submitting}
+                        className="w-20 h-20 rounded border-2 border-dashed border-border hover:border-primary/50 flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
+                      >
+                        {uploading ? (
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <>
+                            <ImagePlus className="w-5 h-5" />
+                            <span className="text-[10px]">Add image</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   )}
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
