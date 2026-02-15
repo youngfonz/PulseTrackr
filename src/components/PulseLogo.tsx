@@ -9,13 +9,13 @@ export function PulseLogo({ size = 28, className }: PulseLogoProps) {
   return (
     <div
       className={cn(
-        'bg-primary flex items-center justify-center rounded-lg',
+        'bg-[#171717] flex items-center justify-center rounded-lg',
         className
       )}
       style={{ width: size, height: size }}
     >
       <svg
-        className="text-primary-foreground"
+        className="text-white"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
