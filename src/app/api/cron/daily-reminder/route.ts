@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { resend } from '@/lib/email'
 
-const OWNER_USER_ID = 'user_39SlomWbjtGqfeVNrvyIWnnoBtv'
+const OWNER_USER_ID = 'user_39KEkT66j3ZRRZLdFBaDEzWjKtr'
 
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get('authorization')
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ status: 'skipped', reason: 'No tasks due' })
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulse-trackr.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://pulsepro.work'
   const totalTasks = overdueTasks.length + dueTodayTasks.length
   const dateStr = todayStart.toLocaleDateString('en-US', {
     weekday: 'long',
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
   const html = buildEmailHtml({ overdueTasks, dueTodayTasks, appUrl, dateStr })
 
   await resend.emails.send({
-    from: process.env.RESEND_FROM_EMAIL || 'Pulse <onboarding@resend.dev>',
+    from: process.env.RESEND_FROM_EMAIL || 'Pulse Pro <onboarding@resend.dev>',
     to: reminderEmail,
     subject: `${totalTasks} task${totalTasks === 1 ? '' : 's'} need${totalTasks === 1 ? 's' : ''} attention — ${dateStr}`,
     html,
@@ -166,7 +166,7 @@ function buildEmailHtml({
 
           <!-- Header -->
           <div style="padding: 32px 24px 24px;">
-            <div style="font-size: 18px; font-weight: 700; color: #0a0a0a; margin-bottom: 4px;">Pulse</div>
+            <div style="font-size: 18px; font-weight: 700; color: #0a0a0a; margin-bottom: 4px;">Pulse Pro</div>
             <div style="font-size: 13px; color: #737373;">${dateStr}</div>
           </div>
 
@@ -184,7 +184,7 @@ function buildEmailHtml({
         </div>
 
         <div style="text-align: center; padding: 16px; font-size: 11px; color: #a3a3a3;">
-          Sent by Pulse &middot; Daily task reminder
+          Sent by Pulse Pro &middot; Daily task reminder
         </div>
       </div>
     </body>

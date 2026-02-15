@@ -96,15 +96,14 @@ export function Hero() {
 
             <ScrollReveal delay={100}>
               <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-bold text-foreground leading-[1.1] tracking-tight">
-                Project management,{' '}
-                <span className="text-primary">minus the complexity</span>.
+                Stop juggling clients{' '}
+                <span className="text-primary">in your head</span>.
               </h1>
             </ScrollReveal>
 
             <ScrollReveal delay={200}>
               <p className="text-lg md:text-xl text-muted-foreground mt-6 max-w-xl leading-relaxed">
-                No steep learning curve. No features you&apos;ll never use.
-                Just clients, projects, and tasks — organized in seconds.
+                Trello, Asana, and Notion weren&apos;t built for you. Pulse Pro is — one place to track every client, project, and deadline. Set up in minutes, not days.
               </p>
             </ScrollReveal>
 
@@ -134,7 +133,7 @@ export function Hero() {
                   <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
-                  Free to start
+                  Setup in 5 minutes
                 </div>
                 <div className="flex items-center gap-1.5">
                   <svg className="w-4 h-4 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -167,7 +166,7 @@ export function Hero() {
 
                 <Image
                   src="/screenshots/dashboard.png"
-                  alt="Pulse dashboard showing project overview"
+                  alt="Pulse Pro dashboard showing project overview"
                   width={1920}
                   height={1200}
                   className="w-full h-auto"
@@ -182,7 +181,7 @@ export function Hero() {
         <ScrollReveal delay={500}>
           <div className="mt-20 pt-12 border-t border-border/50">
             <p className="text-sm text-muted-foreground text-center mb-8 tracking-wide uppercase">
-              Used by founders and creatives all over the world
+              Trusted by freelancers, consultants, and small teams
             </p>
             <LogoMarks />
           </div>

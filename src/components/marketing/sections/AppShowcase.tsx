@@ -7,10 +7,10 @@ import { useScrollReveal } from '@/hooks/useScrollReveal';
 import { cn } from '@/lib/utils';
 
 const screens = [
-  { src: '/screenshots/dashboard.png', label: 'Dashboard', alt: 'Pulse dashboard with project overview and stats' },
-  { src: '/screenshots/projects.png', label: 'Projects', alt: 'Pulse projects view with task management' },
-  { src: '/screenshots/tasks.png', label: 'Tasks', alt: 'Pulse task list with status tracking' },
-  { src: '/screenshots/bookmarks.png', label: 'Bookmarks', alt: 'Pulse bookmarks for saving important items' },
+  { src: '/screenshots/dashboard.png', label: 'Dashboard', alt: 'Pulse Pro dashboard with project overview and stats' },
+  { src: '/screenshots/projects.png', label: 'Projects', alt: 'Pulse Pro projects view with task management' },
+  { src: '/screenshots/tasks.png', label: 'Tasks', alt: 'Pulse Pro task list with status tracking' },
+  { src: '/screenshots/bookmarks.png', label: 'Bookmarks', alt: 'Pulse Pro bookmarks for saving important items' },
 ];
 
 export function AppShowcase() {

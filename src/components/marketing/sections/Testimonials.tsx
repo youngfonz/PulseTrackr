@@ -1,34 +1,72 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { ScrollReveal } from '@/components/marketing/ScrollReveal'
+
+const audiences = ['freelancers', 'designers', 'creatives', 'entrepreneurs', 'small teams']
 
 const testimonials = [
   {
-    quote: "I tried Trello, Asana, Notion — they all felt like overkill. Pulse is the only tool that didn't need a tutorial.",
+    quote: "I manage 6 clients at once. Before Pulse Pro, I was tracking everything in sticky notes and spreadsheets. Now I actually feel in control.",
     name: "Sarah Kim",
     role: "Freelance Designer",
     initials: "SK",
+    color: 'blue' as const,
   },
   {
-    quote: "Set it up in under 5 minutes. No boards, no sprints, no nonsense. Just my tasks and deadlines. Perfect.",
+    quote: "I tried Trello, Asana, Notion — they all felt like overkill for a solo consultant. Pulse Pro was set up in 5 minutes. That's it. Done.",
     name: "Marcus Chen",
-    role: "Web Developer",
+    role: "IT Consultant",
     initials: "MC",
+    color: 'emerald' as const,
   },
   {
-    quote: "The daily email reminders alone are worth it. I always know exactly what's due without opening anything.",
+    quote: "The daily email telling me what's due today? Game changer. I used to wake up anxious about what I was forgetting. Not anymore.",
     name: "Ava Rodriguez",
-    role: "Content Creator",
+    role: "Marketing Strategist",
     initials: "AR",
+    color: 'violet' as const,
   }
 ]
+
+const avatarColors = {
+  blue: 'bg-blue-500/15 text-blue-500 ring-blue-500/20',
+  emerald: 'bg-emerald-500/15 text-emerald-500 ring-emerald-500/20',
+  violet: 'bg-violet-500/15 text-violet-500 ring-violet-500/20',
+} as const
+
+function RotatingText() {
+  const [index, setIndex] = useState(0)
+  const [isVisible, setIsVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsVisible(false)
+      setTimeout(() => {
+        setIndex((prev) => (prev + 1) % audiences.length)
+        setIsVisible(true)
+      }, 300)
+    }, 3000)
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <span
+      className={`inline-block text-blue-500 transition-all duration-300 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-1'
+      }`}
+    >
+      {audiences[index]}
+    </span>
+  )
+}
 
 export function Testimonials() {
   return (
     <section className="py-20 md:py-28 border-t border-border">
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <h2 className="text-3xl font-semibold text-foreground tracking-tight text-center">
-          Trusted by freelancers who ship.
+          Trusted by <RotatingText /> who ship.
         </h2>
 
         <ScrollReveal>
@@ -40,7 +78,7 @@ export function Testimonials() {
                 </p>
 
                 <div className="mt-6 pt-4 border-t border-border flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground">
+                  <div className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold ring-1 ${avatarColors[testimonial.color]}`}>
                     {testimonial.initials}
                   </div>
                   <div>

@@ -13,7 +13,7 @@ export default function SignUpPage() {
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-2xl font-bold">Pulse</span>
+            <span className="text-2xl font-bold">Pulse Pro</span>
           </div>
           <p className="text-muted-foreground">Create your account to get started</p>
         </div>

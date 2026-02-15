@@ -7,7 +7,7 @@ const plans = [
   {
     name: 'Free',
     price: '$0',
-    description: 'For getting started.',
+    description: 'Perfect for trying it out.',
     features: [
       '3 projects',
       '50 tasks',
@@ -20,12 +20,13 @@ const plans = [
   {
     name: 'Pro',
     price: '$9',
-    description: 'For serious freelancers.',
+    description: 'Never miss a deadline again.',
     features: [
       'Unlimited projects',
       'Unlimited tasks',
       'Unlimited clients',
       'File attachments',
+      'Daily email reminders',
       'Priority support'
     ],
     highlighted: true,
@@ -41,7 +42,7 @@ export function Pricing() {
           Simple pricing
         </h2>
         <p className="text-base text-muted-foreground mt-3 text-center">
-          Start free, upgrade when you&apos;re ready.
+          No per-seat fees. No annual contracts. Start free, upgrade when you&apos;re ready.
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mt-12">

@@ -59,10 +59,10 @@ export function MarketingFooter() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <PulseLogo size={28} />
-            <span className="text-lg font-bold text-foreground">Pulse</span>
+            <span className="text-lg font-bold text-foreground">Pulse Pro</span>
           </Link>
           <p className="text-sm text-muted-foreground">
-            © 2026 Pulse. All rights reserved.
+            © 2026 Pulse Pro. All rights reserved.
           </p>
         </div>
       </div>

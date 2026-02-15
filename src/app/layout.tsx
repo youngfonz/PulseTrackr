@@ -19,16 +19,16 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pulsepro.work"),
-  title: "Pulse — Project & Task Management",
-  description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse.",
+  title: "Pulse Pro — Project & Task Management",
+  description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse Pro.",
   openGraph: {
-    title: "Pulse — Project & Task Management",
-    description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse.",
+    title: "Pulse Pro — Project & Task Management",
+    description: "Plan, track, and manage your projects and tasks in one place. Organize clients, set deadlines, and stay on top of your work with Pulse Pro.",
     type: "website",
   },
   twitter: {
     card: "summary",
-    title: "Pulse — Project & Task Management",
+    title: "Pulse Pro — Project & Task Management",
     description: "Plan, track, and manage your projects and tasks in one place.",
   },
 };

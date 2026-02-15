@@ -40,7 +40,7 @@ export function MarketingNav() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 hover:opacity-90 transition-opacity">
             <PulseLogo size={32} />
-            <span className="text-xl font-bold text-foreground">Pulse</span>
+            <span className="text-xl font-bold text-foreground">Pulse Pro</span>
           </Link>
 
           {/* Desktop Navigation */}

@@ -59,13 +59,13 @@ export default function SignupPage() {
                 <path d="M22 12h-4l-3 9L9 3l-3 9H2" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </div>
-            <span className="text-2xl font-bold text-foreground">Pulse</span>
+            <span className="text-2xl font-bold text-foreground">Pulse Pro</span>
           </div>
 
           {/* Header */}
           <div className="space-y-2">
             <h1 className="text-3xl font-bold text-foreground">Create an account</h1>
-            <p className="text-muted-foreground">Get started with Pulse today</p>
+            <p className="text-muted-foreground">Get started with Pulse Pro today</p>
           </div>
 
           {/* Signup Form */}
@@ -195,7 +195,7 @@ export default function SignupPage() {
       <div className="hidden lg:flex lg:flex-1 bg-gradient-to-br from-primary to-accent p-12 text-white">
         <div className="flex flex-col justify-center max-w-lg">
           <h2 className="text-4xl font-bold mb-6">
-            Join thousands of teams already using Pulse
+            Join thousands of teams already using Pulse Pro
           </h2>
           <div className="space-y-6">
             <div className="flex gap-4">

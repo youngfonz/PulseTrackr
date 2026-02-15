@@ -4,32 +4,32 @@ import { useState } from 'react'
 
 const faqs = [
   {
-    question: "What is Pulse?",
-    answer: "Pulse is project management without the bloat. No Gantt charts, no sprint planning, no 30-minute onboarding videos. Just a clean way to track your clients, projects, and tasks."
+    question: "Who is Pulse Pro for?",
+    answer: "Pulse Pro is built for freelancers, consultants, and small teams who manage multiple clients and projects. If you've tried Asana, Trello, or Notion and found them too complex for your workflow, Pulse Pro is for you."
   },
   {
     question: "How is this different from Trello or Asana?",
-    answer: "Those tools are built for teams of 50. Pulse is built for you. No boards to configure, no workflows to set up. Add a client, create a project, add tasks — you're done in under 5 minutes."
+    answer: "Those tools are built for 50-person teams with sprints, boards, and complex workflows. Pulse Pro is built for people who just need to track clients, projects, and deadlines — without the overhead. You'll be up and running in under 5 minutes."
   },
   {
     question: "Is there a free plan?",
-    answer: "Yes! Our free plan includes 3 projects, 50 tasks, and 1 client. It's perfect for getting started and seeing if Pulse is right for you."
+    answer: "Yes. The free plan includes 3 projects, 50 tasks, and 1 client — enough to see if Pulse Pro fits your workflow before upgrading."
   },
   {
-    question: "Can I import my existing projects?",
-    answer: "Not yet, but project import is on our roadmap. For now, you can quickly set up your workspace manually."
+    question: "What do I get with the Pro plan?",
+    answer: "Unlimited projects, tasks, and clients. Plus file attachments, daily email reminders so you never miss a deadline, and priority support. Everything you need to manage a full client roster."
   },
   {
     question: "Is my data secure?",
-    answer: "Absolutely. Pulse is hosted on Vercel with encrypted connections. Your data is never shared with third parties."
+    answer: "Yes. Pulse Pro runs on Vercel with encrypted connections. Your data is never shared with third parties."
   },
   {
     question: "Do you offer refunds?",
-    answer: "Yes, we offer a 30-day money-back guarantee on all paid plans. No questions asked."
+    answer: "Yes — 30-day money-back guarantee on all paid plans. No questions asked."
   },
   {
-    question: "Can I use Pulse with my team?",
-    answer: "Team features are coming soon! Currently Pulse is optimized for individual freelancers and solo creators."
+    question: "Can my team use Pulse Pro?",
+    answer: "Team workspaces with shared projects, task assignment, and manager dashboards are on our roadmap. Right now Pulse Pro is optimized for individuals and solo professionals — but team features are coming."
   }
 ]
 

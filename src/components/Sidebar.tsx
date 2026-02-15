@@ -95,7 +95,7 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
       <div className="fixed top-0 left-0 right-0 z-40 flex h-14 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 md:hidden">
         <div className="flex items-center gap-2">
           <PulseLogo />
-          <span className="text-lg font-bold text-sidebar-foreground">Pulse</span>
+          <span className="text-lg font-bold text-sidebar-foreground">Pulse Pro</span>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -175,7 +175,7 @@ export function Sidebar({ clientCount, clerkEnabled = false }: SidebarProps) {
             {!isCollapsed && (
               <>
                 <PulseLogo />
-                <h1 className="text-lg font-bold text-sidebar-foreground">Pulse</h1>
+                <h1 className="text-lg font-bold text-sidebar-foreground">Pulse Pro</h1>
               </>
             )}
           </div>

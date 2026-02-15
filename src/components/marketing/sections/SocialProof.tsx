@@ -6,7 +6,7 @@ export function SocialProof() {
       <div className="max-w-6xl mx-auto px-4 md:px-8">
         <ScrollReveal>
           <p className="text-sm text-muted-foreground text-center">
-            Used by 50+ freelancers and creators in beta.
+            Trusted by freelancers, consultants, and small teams managing client work.
           </p>
         </ScrollReveal>
       </div>
